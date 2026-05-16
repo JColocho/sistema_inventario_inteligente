@@ -5,15 +5,20 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.sistema_inventario_inteligente.models.Producto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navigationView;
@@ -30,10 +35,22 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        /*
+        //Conexion a la base de datos
+        //Obtener la instancia a la base de datos
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
 
-        myRef.setValue("Hello, World!");
+        //Crear la referencia a la tabla
+        DatabaseReference productosRef = database.getReference("Productos");
+        //Crear el objeto con todos los datos a guardar
+        Producto producto = new Producto("Laptop HP", "Tecnología", "AMD", 185.00 ,5.0);
+
+        //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
+        // y .setValue() inserta el objeto allí.
+        productosRef.push().setValue(producto);
+
+
+         */
 
         navigationView = findViewById(R.id.navegationView);
         frameVista = findViewById(R.id.containerMain);
@@ -64,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
             return false;
         });
+
+
 
     }
     //Metodo para mostrar vista seleccionada

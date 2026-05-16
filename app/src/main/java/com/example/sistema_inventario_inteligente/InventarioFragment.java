@@ -2,13 +2,29 @@ package com.example.sistema_inventario_inteligente;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.sistema_inventario_inteligente.adapters.ProductoAdapater;
+import com.example.sistema_inventario_inteligente.models.Producto;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
 public class InventarioFragment extends Fragment {
+    public RecyclerView rvProducto;
+    public ProductoAdapater productoAdapater;
+    public ArrayList<Producto> listaProductos;
 
 
     public InventarioFragment() {
@@ -24,12 +40,45 @@ public class InventarioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_inventario, container, false);
+
+        listaProductos = new ArrayList<>();
+        productoAdapater = new ProductoAdapater(listaProductos);
+
+        rvProducto = view.findViewById(R.id.rvProductos);
+
+        rvProducto.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+
+        DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("Productos");
+
+        productosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaProductos.clear();
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    Producto producto = dataSnapshot.getValue(Producto.class);
+                    listaProductos.add(producto);
+                    productoAdapater.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        rvProducto.setAdapter(productoAdapater);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_inventario, container, false);
+        return view;
     }
 }
