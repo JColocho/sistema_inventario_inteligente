@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "314635298785",
+    "project_id": "sistema-inventario-inteligente",
+    "storage_bucket": "sistema-inventario-inteligente.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:314635298785:android:5b6305df81a174e617d4a0",
+        "android_client_info": {
+          "package_name": "com.example.sistema_inventario_inteligente"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3wrYlOHH3uJSVrqlqD5U1Xbf5N88Gekc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
