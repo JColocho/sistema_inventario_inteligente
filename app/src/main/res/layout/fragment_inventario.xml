@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_secondary"
+    tools:context=".InventarioFragment">
+
+    <!-- ── Contenido principal (scroll) ── -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="24dp">
+
+            <!-- ── ENCABEZADO ── -->
+            <!-- Titulo "Inventario" -->
+            <TextView
+                android:id="@+id/tvTituloInventario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Inventario"
+                android:textColor="@color/text_primary"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/btnAgregar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Boton FAB-like (+) en la esquina superior derecha -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAgregar"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/fab_icon"
+                android:textSize="22sp"
+                app:backgroundTint="@color/fab_background"
+                app:cornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- ── BARRA DE BUSQUEDA ── -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilBuscar"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                app:boxBackgroundColor="@color/bg_surface"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/border_default"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="@color/text_tertiary"
+                app:startIconDrawable="@android:drawable/ic_menu_search"
+                app:startIconTint="@color/text_tertiary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTituloInventario">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBuscar"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="Buscar producto..."
+                    android:inputType="text"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_tertiary"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- ── CHIPS DE CATEGORIA (scroll horizontal) ── -->
+            <HorizontalScrollView
+                android:id="@+id/hsvCategorias"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:scrollbars="none"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilBuscar">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCategorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTodos"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Todos"
+                        android:textColor="@color/bg_primary"
+                        app:chipBackgroundColor="@color/accent_teal"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipComputadoras"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Computadoras"
+                        android:textColor="@color/chip_computadoras_text"
+                        app:chipBackgroundColor="@color/chip_computadoras_bg"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSmartphones"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Smartphones"
+                        android:textColor="@color/chip_smartphones_text"
+                        app:chipBackgroundColor="@color/chip_smartphones_bg"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTablets"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tablets"
+                        android:textColor="@color/text_secondary"
+                        app:chipBackgroundColor="@color/bg_card_elevated"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAudio"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Audio"
+                        android:textColor="@color/chip_audio_text"
+                        app:chipBackgroundColor="@color/chip_audio_bg"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTelevisores"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Televisores"
+                        android:textColor="@color/chip_televisores_text"
+                        app:chipBackgroundColor="@color/chip_televisores_bg"
+                        app:chipCornerRadius="8dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <!-- ── FILA: contador + ordenar ── -->
+            <TextView
+                android:id="@+id/tvContadorProductos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:text="6 productos"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/hsvCategorias" />
+
+            <TextView
+                android:id="@+id/tvOrdenarPor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:text="Ordenado por: reciente"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/hsvCategorias" />
+
+            <!-- ── LISTA DE PRODUCTOS (RecyclerView) ── -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProductos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvContadorProductos"
+                tools:listitem="@layout/item_producto"
+                tools:itemCount="4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

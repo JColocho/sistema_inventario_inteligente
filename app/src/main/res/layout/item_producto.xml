@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/item_producto.xml — Card de cada producto en el RecyclerView -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/bg_card"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border_default"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Imagen del producto (cuadrada con badge 3D) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardImagen"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="@color/bg_surface"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/ivProducto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Imagen del producto" />
+
+            <!-- Badge "3D" esquina inferior izquierda -->
+            <TextView
+                android:id="@+id/tvBadge3D"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_badge_teal"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="3D"
+                android:textColor="@color/bg_primary"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Nombre del producto -->
+        <TextView
+            android:id="@+id/tvNombreProducto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Laptop HP EliteBook 840"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/ivChevron"
+            app:layout_constraintStart_toEndOf="@+id/cardImagen"
+            app:layout_constraintTop_toTopOf="@+id/cardImagen" />
+
+        <!-- Chips de categoria y stock en fila -->
+        <LinearLayout
+            android:id="@+id/llChips"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toEndOf="@+id/cardImagen"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreProducto"
+            app:layout_constraintEnd_toStartOf="@+id/ivChevron">
+
+            <!-- Chip categoria -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCategoria"
+                style="@style/Widget.MaterialComponents.Chip.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text="Computadoras"
+                android:textColor="@color/chip_computadoras_text"
+                android:textSize="11sp"
+                app:chipBackgroundColor="@color/chip_computadoras_bg"
+                app:chipCornerRadius="6dp"
+                app:chipMinHeight="26dp"
+                app:chipStrokeWidth="0dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <!-- Chip stock -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStock"
+                style="@style/Widget.MaterialComponents.Chip.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:layout_marginStart="6dp"
+                android:text="En stock"
+                android:textColor="@color/status_success"
+                android:textSize="11sp"
+                app:chipBackgroundColor="@color/status_success_10"
+                app:chipCornerRadius="6dp"
+                app:chipMinHeight="26dp"
+                app:chipStrokeWidth="0dp"
+                app:ensureMinTouchTargetSize="false" />
+
+        </LinearLayout>
+
+        <!-- Precio -->
+        <TextView
+            android:id="@+id/tvPrecio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="6dp"
+            android:text="$18,500"
+            android:textColor="@color/text_price"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/cardImagen"
+            app:layout_constraintTop_toBottomOf="@+id/llChips" />
+
+        <!-- Unidades -->
+        <TextView
+            android:id="@+id/tvUnidades"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="12 uds."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@+id/ivChevron"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPrecio" />
+
+        <!-- Flecha derecha -->
+        <ImageView
+            android:id="@+id/ivChevron"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_chevron_right"
+            android:contentDescription="Ver detalle"
+            app:tint="@color/text_tertiary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

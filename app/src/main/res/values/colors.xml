@@ -1,5 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- =============================================
+         INVENAR — Paleta de Colores
+         Tema: Dark Navy Tech
+    ============================================= -->
+
+    <!-- FONDOS PRINCIPALES -->
+    <color name="bg_primary">#0D1117</color>
+    <color name="bg_secondary">#131B24</color>
+    <color name="bg_card">#162030</color>
+    <color name="bg_card_elevated">#1A2535</color>
+    <color name="bg_surface">#1E2D3E</color>
+
+    <!-- ACENTO PRIMARIO — Verde Teal -->
+    <color name="accent_teal">#00D4AA</color>
+    <color name="accent_teal_dark">#00A887</color>
+    <color name="accent_teal_light">#33DDBB</color>
+    <color name="accent_teal_10">#1A00D4AA</color>
+    <color name="accent_teal_20">#3300D4AA</color>
+
+    <!-- ACENTO SECUNDARIO — Morado / Indigo -->
+    <color name="accent_purple">#7C6FE0</color>
+    <color name="accent_purple_dark">#5A4FC8</color>
+    <color name="accent_purple_10">#1A7C6FE0</color>
+
+    <!-- ESTADOS DE STOCK -->
+    <color name="status_warning">#F59E0B</color>
+    <color name="status_warning_10">#1AF59E0B</color>
+    <color name="status_error">#EF4444</color>
+    <color name="status_error_10">#1AEF4444</color>
+    <color name="status_success">#10B981</color>
+    <color name="status_success_10">#1A10B981</color>
+
+    <!-- TEXTO -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#8B9AB0</color>
+    <color name="text_tertiary">#4A5568</color>
+    <color name="text_accent">#00D4AA</color>
+    <color name="text_warning">#F59E0B</color>
+    <color name="text_error">#EF4444</color>
+    <color name="text_price">#00D4AA</color>
+
+    <!-- CHIPS / BADGES DE CATEGORIA -->
+    <color name="chip_computadoras_bg">#1A7C6FE0</color>
+    <color name="chip_computadoras_text">#A78BFA</color>
+    <color name="chip_smartphones_bg">#1A818CF8</color>
+    <color name="chip_smartphones_text">#818CF8</color>
+    <color name="chip_televisores_bg">#1AF59E0B</color>
+    <color name="chip_televisores_text">#FCD34D</color>
+    <color name="chip_audio_bg">#1AF472B6</color>
+    <color name="chip_audio_text">#F472B6</color>
+
+    <!-- BORDES Y DIVISORES -->
+    <color name="border_default">#1E2D3E</color>
+    <color name="border_accent">#00D4AA</color>
+    <color name="divider">#1A2535</color>
+
+    <!-- BOTTOM NAVIGATION -->
+    <color name="nav_active">#00D4AA</color>
+    <color name="nav_inactive">#4A5568</color>
+    <color name="nav_background">#131B24</color>
+
+    <!-- NOTIFICACION / BADGE -->
+    <color name="badge_notification">#EF4444</color>
+
+    <!-- GPS ACTIVO -->
+    <color name="gps_active_dot">#00D4AA</color>
+    <color name="gps_card_bg">#1A00D4AA</color>
+    <color name="gps_card_border">#2A00D4AA</color>
+
+    <!-- BOTON SCAN (CTA principal) -->
+    <color name="btn_scan_bg">#0D3D35</color>
+    <color name="btn_scan_icon_bg">#00D4AA</color>
+
+    <!-- FAB (+) AGREGAR -->
+    <color name="fab_background">#00D4AA</color>
+    <color name="fab_icon">#0D1117</color>
+
+    <!-- MAPA DE SUCURSALES -->
+    <color name="map_bg">#131B24</color>
+    <color name="map_pin_active">#00D4AA</color>
+    <color name="map_pin_inactive">#4A5568</color>
+    <color name="map_user_location">#3B82F6</color>
+
+    <!-- KM / DISTANCIA -->
+    <color name="distance_text">#00D4AA</color>
 </resources>
