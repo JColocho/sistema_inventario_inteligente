@@ -11,7 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.sistema_inventario_inteligente.models.Producto;
+import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,26 +31,27 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
         /*
         //Conexion a la base de datos
         //Obtener la instancia a la base de datos
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         //Crear la referencia a la tabla
-        DatabaseReference productosRef = database.getReference("Productos");
+        DatabaseReference categoriaRef = database.getReference("Categorias");
         //Crear el objeto con todos los datos a guardar
-        Producto producto = new Producto("ASUS", "Computadoras", "Ryzen 7 7000, RX7000", 800.00 ,5.0);
+        Categoria categoria = new Categoria("Controles");
 
         //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
         // y .setValue() inserta el objeto allí.
-        String idProducto = productosRef.push().getKey();
+        String idCategoria = categoriaRef.push().getKey();
 
-        producto.idProducto = idProducto;
+        categoria.setIdCategoria(idCategoria);
 
-        productosRef.child(idProducto).setValue(producto);
+        categoriaRef.child(idCategoria).setValue(categoria);
+        */
 
 
-         */
 
 
 

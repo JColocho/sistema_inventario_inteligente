@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/spinner_item_tienda.xml — item seleccionado (collapsed) -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="@color/text_primary"
-    android:textSize="15sp"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp"
-    android:paddingEnd="28dp"
+    android:background="@color/bg_card"
     android:ellipsize="end"
-    android:maxLines="1" />
+    android:maxLines="1"
+    android:paddingTop="2dp"
+    android:paddingEnd="28dp"
+    android:paddingBottom="2dp"
+    android:textColor="@color/text_primary"
+    android:textSize="15sp" />

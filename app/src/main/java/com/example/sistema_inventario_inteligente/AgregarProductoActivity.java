@@ -18,6 +18,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -25,15 +26,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +50,9 @@ public class AgregarProductoActivity extends AppCompatActivity {
             txtCantidad,txtCoordX, txtCoordY, txtCoordZ;
     public String rutaCamara;
     private Uri uriImageCamara;
-    public Spinner spTiendas;
+    private ArrayList<Categoria> listaCategorias;
+    private ArrayAdapter<Categoria> adapterCategoria;
+    public Spinner spTiendas, spCategoria;
 
     private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri ->{
@@ -76,9 +84,19 @@ public class AgregarProductoActivity extends AppCompatActivity {
         txtCoordX = findViewById(R.id.txtCoordXAdd);
         txtCoordY = findViewById(R.id.txtCoordYAdd);
         txtCoordZ = findViewById(R.id.txtCoordZAdd);
+        spCategoria = findViewById(R.id.spCategoriaAdd);
         btnGuardarCamara = findViewById(R.id.btnCamaraAddProducto);
         btnGuardarGaleria = findViewById(R.id.btnGaleriaAddProducto);
         btnGuardarProducto = findViewById(R.id.btnGuardarProducto);
+
+        listaCategorias = new ArrayList<>();
+        adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, listaCategorias);
+        adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);
+
+        cargarCategorias();
+
+        spCategoria.setAdapter(adapterCategoria);
+
 
         btnAtras.setOnClickListener(v -> {
             finish();
@@ -90,37 +108,112 @@ public class AgregarProductoActivity extends AppCompatActivity {
         btnGuardarProducto.setOnClickListener(v -> {
 
             try {
-                //Obtener la instancia a la base de datos
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                //Validando los campos
+                if (validarCampos()){
+                    //Capturando los datos de los campos
+                    String nombre = txtNombre.getText().toString().trim().toUpperCase(),
+                            descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
+                            categoria = spCategoria.getSelectedItem().toString();
 
-                //Crear la referencia a la tabla
-                DatabaseReference productosRef = database.getReference("Productos");
-                //Crear el objeto con todos los datos a guardar
-                Producto producto = new Producto(txtNombre.getText().toString(),
-                        "Computadoras",
-                        txtDescripcion.getText().toString(),
-                        Double.parseDouble(txtPrecio.getText().toString()),
-                        Double.parseDouble(txtCantidad.getText().toString()),
-                        Double.parseDouble(txtCoordX.getText().toString()),
-                        Double.parseDouble(txtCoordY.getText().toString()),
-                        Double.parseDouble(txtCoordZ.getText().toString()));
+                    double precio = Double.parseDouble(txtPrecio.getText().toString()),
+                            cantidad = Double.parseDouble(txtCantidad.getText().toString()),
+                            coordX = Double.parseDouble(txtCoordX.getText().toString()),
+                            coordY = Double.parseDouble(txtCoordY.getText().toString()),
+                            coordZ = Double.parseDouble(txtCoordZ.getText().toString());
 
-                //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
-                // y .setValue() inserta el objeto allí.
-                String idProducto = productosRef.push().getKey();
+                    //Creando el objeto con todos los datos a guardar
+                    Producto producto = new Producto(nombre, categoria, descripcion,
+                            precio, cantidad, coordX, coordY, coordZ);
+                    //Obtener la instancia a la base de datos
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-                producto.setIdProducto(idProducto);
+                    //Crear la referencia a la tabla
+                    DatabaseReference productosRef = database.getReference("Productos");
 
-                productosRef.child(idProducto).setValue(producto);
+                    //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
+                    // y .setValue() inserta el objeto allí.
+                    String idProducto = productosRef.push().getKey();
 
-                Toast.makeText(this, "Producto Registrado", Toast.LENGTH_SHORT).show();
-                finish();
+                    producto.setIdProducto(idProducto);
+
+                    productosRef.child(idProducto).setValue(producto);
+
+                    Toast.makeText(this, "Producto Registrado", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
             } catch (Exception e) {
 
                 Log.i("ERROR DB", "No se pudo subir los datos");
                 throw new RuntimeException(e);
             }
         });
+    }
+    //Metodo para validar los campos
+    private boolean validarCampos(){
+
+        if (txtNombre.getText().toString().trim().isEmpty()){
+            txtNombre.setText("");
+            txtNombre.setError("Campo vacio.");
+            return false;
+        }
+
+        if (txtDescripcion.getText().toString().trim().isEmpty()){
+            txtDescripcion.setText("");
+            txtDescripcion.setError("Campo vacio.");
+            return false;
+        }
+
+        if (txtPrecio.getText().toString().trim().isEmpty() ||
+                Double.parseDouble(txtPrecio.getText().toString().trim()) <= 0){
+            txtPrecio.setError("Precio invalido.");
+            return false;
+        }
+
+        if (txtCantidad.getText().toString().trim().isEmpty() ||
+                Double.parseDouble(txtCantidad.getText().toString()) <= 0){
+            txtCantidad.setError("Cantidad invalido.");
+            return false;
+        }
+
+        if (txtCoordX.getText().toString().trim().isEmpty()){
+            txtCoordX.setError("Coordenada invalido.");
+            return false;
+        }
+
+        if (txtCoordY.getText().toString().trim().isEmpty()){
+            txtCoordY.setError("Coordenada invalido.");
+            return false;
+        }
+
+        if (txtCoordZ.getText().toString().trim().isEmpty()){
+            txtCoordZ.setError("Coordenada invalido.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void cargarCategorias(){
+        DatabaseReference categoriaRef = FirebaseDatabase.getInstance().getReference("Categorias");
+
+        categoriaRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaCategorias.clear();
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    Categoria categoria = dataSnapshot.getValue(Categoria.class);
+                    listaCategorias.add(categoria);
+                    adapterCategoria.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void abrirGaleria(){
@@ -131,8 +224,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
 
     }
-
-
 
     private String copiarImagenApp(Uri uriOriginal) {
         try {

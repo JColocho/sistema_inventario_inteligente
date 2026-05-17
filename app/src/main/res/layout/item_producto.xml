@@ -147,15 +147,15 @@
         <!-- Flecha derecha -->
         <ImageView
             android:id="@+id/ivChevron"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_chevron_right"
             android:contentDescription="Ver detalle"
-            app:tint="@color/text_tertiary"
+            android:src="@drawable/ic_chevron_right"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:tint="@color/accent_teal" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

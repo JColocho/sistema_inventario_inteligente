@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/spinner_dropdown_tienda.xml — lista desplegable -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/bg_card_elevated"
-    android:textColor="@color/text_primary"
-    android:textSize="14sp"
     android:paddingStart="16dp"
-    android:paddingEnd="16dp"
     android:paddingTop="14dp"
-    android:paddingBottom="14dp" />
+    android:paddingEnd="16dp"
+    android:paddingBottom="14dp"
+    android:textColor="@color/text_primary"
+    android:textSize="14sp" />

@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    OPTIMIZACIONES APLICADAS:
-    1. Campos de texto: LinearLayout(wrapper) + TextView(label) + EditText
-       → TextInputLayout + TextInputEditText  (hint flotante, -2 niveles por campo)
-    2. Botones Galería/Cámara: LinearLayout → MaterialButton con icon
-    3. Botón Modelo 3D: 3 LinearLayouts anidados → 1 MaterialButton con icon
-    4. Chips de categoría: TextView sueltos → com.google.android.material.chip.Chip
-       dentro de ChipGroup (selección única automática, sin lógica Java extra)
-    5. Sección headers: extraídos a un estilo @style/SectionHeader (definir en styles.xml)
-    6. Coordenadas AR: eliminado LinearLayout contenedor redundante
--->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -80,7 +69,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textView15"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="SUBIR IMAGEN DE REFERENCIA *"
@@ -125,7 +114,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="NOMBRE DEL PRODUCTO *"
@@ -150,7 +139,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="DESCRIPCION *"
@@ -176,7 +165,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="SELECCIONAR CATEGORIA *"
@@ -187,7 +176,8 @@
                 android:id="@+id/spCategoriaAdd"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/bg_field_teal" />
+                android:background="@drawable/bg_field_teal"
+                android:padding="10dp" />
 
         </LinearLayout>
 
@@ -204,7 +194,7 @@
                 android:paddingRight="10dp">
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textView6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="PRECIO *"
@@ -230,7 +220,7 @@
                 android:paddingLeft="10dp">
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textView7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="CANTIDAD *"
@@ -257,7 +247,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="SELECCIONAR TIENDA *"
@@ -268,12 +258,13 @@
                 android:id="@+id/spTiendasAdd"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/bg_field_teal" />
+                android:background="@drawable/bg_field_teal"
+                android:padding="10dp" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/textView9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="COORDENADAS AR (X, Y, X) *"
@@ -293,7 +284,7 @@
                 android:paddingRight="10dp">
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/textView10"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="X"
@@ -319,7 +310,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Y"
@@ -346,7 +337,7 @@
                 android:paddingLeft="10dp">
 
                 <TextView
-                    android:id="@+id/textView6"
+                    android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Z"
