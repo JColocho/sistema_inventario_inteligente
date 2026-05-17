@@ -1,5 +1,6 @@
 package com.example.sistema_inventario_inteligente;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.sistema_inventario_inteligente.adapters.ProductoAdapater;
 import com.example.sistema_inventario_inteligente.models.Producto;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 
 public class InventarioFragment extends Fragment {
     public RecyclerView rvProducto;
+    public Button btnAgregar;
     public ProductoAdapater productoAdapater;
     public ArrayList<Producto> listaProductos;
 
@@ -40,8 +43,6 @@ public class InventarioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -53,10 +54,9 @@ public class InventarioFragment extends Fragment {
         productoAdapater = new ProductoAdapater(listaProductos);
 
         rvProducto = view.findViewById(R.id.rvProductos);
+        btnAgregar = view.findViewById(R.id.btnAgregar);
 
         rvProducto.setLayoutManager(new LinearLayoutManager(getContext()));
-
-
 
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("Productos");
 
@@ -75,6 +75,11 @@ public class InventarioFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
+        });
+
+        btnAgregar.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), AgregarProductoActivity.class);
+            startActivity(intent);
         });
 
         rvProducto.setAdapter(productoAdapater);

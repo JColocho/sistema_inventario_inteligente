@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/bg_spinner_arrow.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Sin fondo propio (hereda bg_field del padre) -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- Flecha teal alineada a la derecha -->
+    <item
+        android:gravity="end|center_vertical"
+        android:right="2dp">
+        <rotate
+            android:fromDegrees="45"
+            android:toDegrees="45"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape android:shape="rectangle">
+                <solid android:color="@color/accent_teal" />
+                <size
+                    android:width="8dp"
+                    android:height="8dp" />
+            </shape>
+        </rotate>
+    </item>
+
+</layer-list>

@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="#FFFFFF"
+    android:autoMirrored="true">
+  <group android:scaleX="0.58"
+      android:scaleY="0.58"
+      android:translateX="201.6"
+      android:translateY="201.6">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M560,720L320,480L560,240L616,296L432,480L616,664L560,720Z"/>
+  </group>
+</vector>

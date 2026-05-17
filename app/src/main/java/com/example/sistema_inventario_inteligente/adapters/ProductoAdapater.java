@@ -15,7 +15,7 @@ import com.google.android.material.chip.Chip;
 import java.util.ArrayList;
 
 public class ProductoAdapater extends RecyclerView.Adapter<ProductoAdapater.ProductoVH> {
-
+    private String idProducto;
     public ArrayList<Producto> dataProductos = new ArrayList<>();
 
     public ProductoAdapater(ArrayList<Producto> productos) {
@@ -33,9 +33,12 @@ public class ProductoAdapater extends RecyclerView.Adapter<ProductoAdapater.Prod
     public void onBindViewHolder(@NonNull ProductoAdapater.ProductoVH holder, int position) {
         Producto producto = dataProductos.get(position);
 
-        holder.tvNombre.setText(producto.nombre);
-        holder.tvPrecio.setText(String.format("$n.f2", producto.precio));
-        holder.tvUnidades.setText(producto.stock.toString());
+        idProducto = producto.getIdProducto();
+
+        holder.tvNombre.setText(producto.getNombre());
+        holder.tvPrecio.setText(String.format("$%.2f", producto.getPrecio()));
+        holder.tvUnidades.setText(producto.getCantidad().toString() + " Unidades");
+        holder.chipategoria.setText(producto.getCategoria());
     }
 
     @Override
@@ -51,6 +54,7 @@ public class ProductoAdapater extends RecyclerView.Adapter<ProductoAdapater.Prod
             tvPrecio = itemView.findViewById(R.id.tvPrecio);
             tvNombre = itemView.findViewById(R.id.tvNombreProducto);
             tvUnidades = itemView.findViewById(R.id.tvUnidades);
+            chipategoria = itemView.findViewById(R.id.chipCategoria);
         }
     }
 }
