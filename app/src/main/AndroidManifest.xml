@@ -31,28 +31,33 @@
 
         <activity
             android:name=".location.MapsActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/title_activity_maps" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-
-        <activity
-            android:name=".AgregarProductoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
 
 <!--                <category android:name="android.intent.category.LAUNCHER" />-->
 <!--            </intent-filter>-->
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+        </activity>
+        <activity
+            android:name=".EditarProductoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetalleProductoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AgregarProductoActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

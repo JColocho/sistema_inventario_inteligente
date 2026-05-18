@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Imagen del producto (cuadrada con badge 3D) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardImagen"
             android:layout_width="80dp"
@@ -33,10 +32,10 @@
                 android:id="@+id/ivProducto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="Imagen del producto" />
+                android:contentDescription="Imagen del producto"
+                android:scaleType="centerCrop" />
 
-            <!-- Badge "3D" esquina inferior izquierda -->
+
             <TextView
                 android:id="@+id/tvBadge3D"
                 android:layout_width="wrap_content"
@@ -68,11 +67,10 @@
             android:textColor="@color/text_primary"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/ivChevron"
+            app:layout_constraintEnd_toStartOf="@+id/ivDetalle"
             app:layout_constraintStart_toEndOf="@+id/cardImagen"
             app:layout_constraintTop_toTopOf="@+id/cardImagen" />
 
-        <!-- Chips de categoria y stock en fila -->
         <LinearLayout
             android:id="@+id/llChips"
             android:layout_width="0dp"
@@ -83,9 +81,8 @@
             android:gravity="center_vertical"
             app:layout_constraintStart_toEndOf="@+id/cardImagen"
             app:layout_constraintTop_toBottomOf="@+id/tvNombreProducto"
-            app:layout_constraintEnd_toStartOf="@+id/ivChevron">
+            app:layout_constraintEnd_toStartOf="@+id/ivDetalle">
 
-            <!-- Chip categoria -->
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipCategoria"
                 style="@style/Widget.MaterialComponents.Chip.Action"
@@ -100,7 +97,6 @@
                 app:chipStrokeWidth="0dp"
                 app:ensureMinTouchTargetSize="false" />
 
-            <!-- Chip stock -->
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipStock"
                 style="@style/Widget.MaterialComponents.Chip.Action"
@@ -118,7 +114,6 @@
 
         </LinearLayout>
 
-        <!-- Precio -->
         <TextView
             android:id="@+id/tvPrecio"
             android:layout_width="wrap_content"
@@ -132,7 +127,6 @@
             app:layout_constraintStart_toEndOf="@+id/cardImagen"
             app:layout_constraintTop_toBottomOf="@+id/llChips" />
 
-        <!-- Unidades -->
         <TextView
             android:id="@+id/tvUnidades"
             android:layout_width="wrap_content"
@@ -141,12 +135,11 @@
             android:text="12 uds."
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
-            app:layout_constraintEnd_toStartOf="@+id/ivChevron"
+            app:layout_constraintEnd_toStartOf="@+id/ivDetalle"
             app:layout_constraintBottom_toBottomOf="@+id/tvPrecio" />
 
-        <!-- Flecha derecha -->
         <ImageView
-            android:id="@+id/ivChevron"
+            android:id="@+id/ivDetalle"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginEnd="4dp"

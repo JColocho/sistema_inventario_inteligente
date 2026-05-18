@@ -64,21 +64,15 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setOnItemSelectedListener(item -> {
             if(item.getItemId() == R.id.inicio){
                 loadFragment(new InicioFragment());
-
-                Toast.makeText(this, "Inicio", Toast.LENGTH_SHORT).show();
                 return true;
             }
             else if(item.getItemId() == R.id.invetario){
                 loadFragment(new InventarioFragment());
-
-                Toast.makeText(this, "Inventario", Toast.LENGTH_SHORT).show();
                 return true;
 
 
             } else if (item.getItemId() == R.id.sucursal) {
                 loadFragment(new SucursalFragment());
-
-                Toast.makeText(this, "Sucursal", Toast.LENGTH_SHORT).show();
                 return true;
             }
 

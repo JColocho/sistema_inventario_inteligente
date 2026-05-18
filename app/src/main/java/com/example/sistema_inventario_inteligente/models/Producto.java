@@ -2,6 +2,7 @@ package com.example.sistema_inventario_inteligente.models;
 
 public class Producto {
     private String idProducto;
+    private String urlImagenProducto;
     private String nombre;
     private String categoria;
     private String descripcion;
@@ -17,6 +18,14 @@ public class Producto {
 
     public void setIdProducto(String idProducto) {
         this.idProducto = idProducto;
+    }
+
+    public String getUrlImagenProducto() {
+        return urlImagenProducto;
+    }
+
+    public void setUrlImagenProducto(String urlImagenProducto) {
+        this.urlImagenProducto = urlImagenProducto;
     }
 
     public String getNombre() {
@@ -87,6 +96,18 @@ public class Producto {
     }
 
     public Producto(String nombre, String categoria, String descripcion, Double precio, Double cantidad, Double coordX, Double coordY, Double coordZ) {
+        this.nombre = nombre;
+        this.categoria = categoria;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.coordX = coordX;
+        this.coordY = coordY;
+        this.coordZ = coordZ;
+    }
+
+    public Producto(String urlImagenProducto, String nombre, String categoria, String descripcion, Double precio, Double cantidad, Double coordX, Double coordY, Double coordZ) {
+        this.urlImagenProducto = urlImagenProducto;
         this.nombre = nombre;
         this.categoria = categoria;
         this.descripcion = descripcion;
