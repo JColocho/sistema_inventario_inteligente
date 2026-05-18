@@ -1,6 +1,7 @@
 package com.example.sistema_inventario_inteligente;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +15,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.sistema_inventario_inteligente.models.Producto;
+import com.example.sistema_inventario_inteligente.models.ProductoContrato;
+import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +28,7 @@ public class DetalleProductoActivity extends AppCompatActivity {
     private String idProducto = "";
     public TextView txtNombre, txtDescripcion, txtCategoria;
     public ImageView imgProducto, btnCerrar, btnEliminar;
+    private ProductoContrato productoRepositorio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,9 @@ public class DetalleProductoActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        productoRepositorio = new ProductoRepository();
+
         imgProducto = findViewById(R.id.imgProductoDetalle);
         txtNombre = findViewById(R.id.txtNombreDetalle);
         txtDescripcion = findViewById(R.id.txtDescripcioDetalle);
@@ -44,33 +51,27 @@ public class DetalleProductoActivity extends AppCompatActivity {
         btnEliminar = findViewById(R.id.btnElminarProducto);
         idProducto = getIntent().getStringExtra("idProducto");
 
-        DatabaseReference productoRef = FirebaseDatabase.getInstance().getReference("Productos").child(idProducto);
-
-        productoRef.addValueEventListener(new ValueEventListener() {
+        productoRepositorio.obtenerProductoId(idProducto, new ProductoContrato.LeerIdCallback() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onProductoCargado(Producto productoObtenido) {
+                Producto producto = productoObtenido;
+                if (producto != null){
+                    txtNombre.setText(producto.getNombre());
+                    txtDescripcion.setText(producto.getDescripcion());
+                    txtCategoria.setText(producto.getCategoria());
 
-                if (snapshot.exists()){
-                    Producto producto = snapshot.getValue(Producto.class);
-                    if (producto != null){
-                        txtNombre.setText(producto.getNombre());
-                        txtDescripcion.setText(producto.getDescripcion());
-                        txtCategoria.setText(producto.getCategoria());
-
-                        Glide.with(DetalleProductoActivity.this)
-                                .load(producto.getUrlImagenProducto())
-                                .placeholder(R.drawable.camara)
-                                .error(R.drawable.camara)
-                                .centerCrop()
-                                .into(imgProducto);
-                    }
+                    Glide.with(DetalleProductoActivity.this)
+                            .load(producto.getUrlImagenProducto())
+                            .placeholder(R.drawable.camara)
+                            .error(R.drawable.camara)
+                            .centerCrop()
+                            .into(imgProducto);
                 }
-
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onError(String error) {
+                Toast.makeText(DetalleProductoActivity.this, error, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -84,15 +85,18 @@ public class DetalleProductoActivity extends AppCompatActivity {
                         dialog.dismiss();
                     })
                     .setPositiveButton("Eliminar", (dialog, which) -> {
-                        // Eliminar registro de firebase
-                        FirebaseDatabase.getInstance()
-                                .getReference("Productos")
-                                .child(idProducto)
-                                .removeValue()
-                                .addOnSuccessListener(d -> {
-                                    Toast.makeText(this, "Producto eliminado", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                });
+
+                        productoRepositorio.eliminarProducto(idProducto, new ProductoContrato.OperacionCallback() {
+                            @Override
+                            public void onExito(String mensaje) {
+                                Toast.makeText(DetalleProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                Toast.makeText(DetalleProductoActivity.this, error, Toast.LENGTH_SHORT).show();                            }
+                        });
                     })
                     .show();
         });

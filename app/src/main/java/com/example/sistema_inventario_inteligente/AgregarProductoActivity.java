@@ -28,6 +28,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
+import com.example.sistema_inventario_inteligente.models.ProductoContrato;
+import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,6 +60,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
     public ArrayList<Categoria> listaCategorias;
     public ArrayAdapter<Categoria> adapterCategoria;
     public Spinner spTiendas, spCategoria;
+    private ProductoContrato repositorio = new ProductoRepository();
 
     private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri ->{
@@ -195,49 +198,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
     }
 
-    private String copiarImagenApp(Uri uriOriginal) {
-        try {
-
-            InputStream inputStream =
-                    getContentResolver().openInputStream(uriOriginal);
-
-            String nombreArchivo =
-                    "IMG_" + System.currentTimeMillis() + ".jpg";
-
-            File directorio =
-                    new File(getFilesDir(), "imagenes");
-
-            if (!directorio.exists()) {
-                directorio.mkdirs();
-            }
-
-            File archivoDestino =
-                    new File(directorio, nombreArchivo);
-
-            OutputStream outputStream =
-                    new FileOutputStream(archivoDestino);
-
-            byte[] buffer = new byte[4096];
-            int bytesLeidos;
-
-            while ((bytesLeidos = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesLeidos);
-            }
-
-            inputStream.close();
-            outputStream.close();
-
-            return archivoDestino.getAbsolutePath();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        return null;
-    }
-
     private final ActivityResultLauncher<String> seleccionaImagenCamara2 =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(),resultado-> {
                 if (resultado) {
@@ -343,22 +303,20 @@ public class AgregarProductoActivity extends AppCompatActivity {
                                 //Creando el objeto con todos los datos a guardar
                                 Producto producto = new Producto(urlImagenProducto,nombre, categoria, descripcion,
                                         precio, cantidad, coordX, coordY, coordZ);
-                                //Obtener la instancia a la base de datos
-                                FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-                                //Crear la referencia a la tabla
-                                DatabaseReference productosRef = database.getReference("Productos");
+                                //Hacemos la inserción en el repositorio
+                                repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {
+                                    @Override
+                                    public void onExito(String mensaje) {
+                                        Toast.makeText(AgregarProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
 
-                                //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
-                                // y .setValue() inserta el objeto allí.
-                                String idProducto = productosRef.push().getKey();
-
-                                producto.setIdProducto(idProducto);
-
-                                productosRef.child(idProducto).setValue(producto);
-
-                                Toast.makeText(this, "Producto Registrado", Toast.LENGTH_SHORT).show();
-                                finish();
+                                    @Override
+                                    public void onError(String error) {
+                                        Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             })
                             .addOnFailureListener(e -> {
                                 Toast.makeText(this, "Error al subir imagen", Toast.LENGTH_SHORT).show();
