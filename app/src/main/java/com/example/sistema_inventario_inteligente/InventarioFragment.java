@@ -58,6 +58,22 @@ public class InventarioFragment extends Fragment {
 
         rvProducto.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        btnAgregar.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), AgregarProductoActivity.class);
+            startActivity(intent);
+        });
+
+        rvProducto.setAdapter(productoAdapater);
+        // Inflate the layout for this fragment
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarProductos();
+    }
+    private void cargarProductos(){
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("Productos");
 
         productosRef.addValueEventListener(new ValueEventListener() {
@@ -67,8 +83,8 @@ public class InventarioFragment extends Fragment {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Producto producto = dataSnapshot.getValue(Producto.class);
                     listaProductos.add(producto);
-                    productoAdapater.notifyDataSetChanged();
                 }
+                productoAdapater.notifyDataSetChanged();
             }
 
             @Override
@@ -76,14 +92,5 @@ public class InventarioFragment extends Fragment {
 
             }
         });
-
-        btnAgregar.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), AgregarProductoActivity.class);
-            startActivity(intent);
-        });
-
-        rvProducto.setAdapter(productoAdapater);
-        // Inflate the layout for this fragment
-        return view;
     }
 }

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_primary"
     android:fillViewport="true"
-    tools:context=".AgregarProductoActivity">
+    tools:context=".EditarProductoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:layout_marginBottom="20dp">
 
             <ImageView
-                android:id="@+id/btnAddBack"
+                android:id="@+id/btnEditarBack"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
                 android:background="@drawable/bg_img"
@@ -31,11 +31,10 @@
                 app:tint="@color/accent_teal" />
 
             <TextView
-                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Agregar Producto"
+                android:text="Editar Producto"
                 android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -52,14 +51,13 @@
             android:padding="10dp">
 
             <ImageView
-                android:id="@+id/imgProductoRef"
+                android:id="@+id/imgProductoEditar"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:background="@drawable/bg_img"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Imagen de Referencia"
@@ -70,7 +68,6 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView15"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="SUBIR IMAGEN DE REFERENCIA *"
@@ -84,7 +81,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnCamaraAddProducto"
+                android:id="@+id/btnCamaraEditarProducto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -96,7 +93,7 @@
                 app:iconSize="30dp" />
 
             <Button
-                android:id="@+id/btnGaleriaAddProducto"
+                android:id="@+id/btnGaleriaEditarProducto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -123,7 +120,7 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/txtNombreProductoAdd"
+                android:id="@+id/txtNombreProductoEditar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_field_teal"
@@ -148,7 +145,7 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/txtDescripcionAdd"
+                android:id="@+id/txtDescripcionEditar"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:background="@drawable/bg_field_teal"
@@ -174,7 +171,7 @@
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/spCategoriaAdd"
+                android:id="@+id/spCategoriaEditar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_field_teal"
@@ -203,7 +200,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtPrecioAdd"
+                    android:id="@+id/txtPrecioEditar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_field_teal"
@@ -229,7 +226,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtCantidadAdd"
+                    android:id="@+id/txtCantidadEditar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_field_teal"
@@ -256,7 +253,7 @@
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/spSucursalAdd"
+                android:id="@+id/spSucursalEditar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_field_teal"
@@ -295,7 +292,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtCoordXAdd"
+                    android:id="@+id/txtCoordXEditar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_field_teal"
@@ -323,7 +320,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtCoordYAdd"
+                    android:id="@+id/txtCoordYEditar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_field_teal"
@@ -350,7 +347,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtCoordZAdd"
+                    android:id="@+id/txtCoordZEditar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_field_teal"
@@ -362,7 +359,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnGuardarProducto"
+            android:id="@+id/btnEditarProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_button"

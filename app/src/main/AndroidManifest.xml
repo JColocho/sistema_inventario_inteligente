@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    //Permisos para la camara
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +13,12 @@
         android:roundIcon="@drawable/aplicacion"
         android:supportsRtl="true"
         android:theme="@style/Theme.Invenar">
+        <activity
+            android:name=".EditarProductoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetalleProductoActivity"
+            android:exported="false" />
         <activity
             android:name=".AgregarProductoActivity"
             android:exported="false" />
@@ -27,16 +32,15 @@
             </intent-filter>
         </activity>
 
-        //Permisos para la camara
         <provider
-            android:authorities="${applicationId}.provider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

@@ -33,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,17 +52,27 @@ public class AgregarProductoActivity extends AppCompatActivity {
             txtCantidad,txtCoordX, txtCoordY, txtCoordZ;
     public String rutaCamara;
     private Uri uriImageCamara;
-    private ArrayList<Categoria> listaCategorias;
-    private ArrayAdapter<Categoria> adapterCategoria;
+    private Uri uriFotoSeleccionada = null;
+    private String urlImagenProducto = "";
+    private String urlModelo3D = "";
+    public ArrayList<Categoria> listaCategorias;
+    public ArrayAdapter<Categoria> adapterCategoria;
     public Spinner spTiendas, spCategoria;
 
     private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri ->{
                 if (uri != null){
-                    String newRoute = copiarImagenApp(uri);
-                    imgProducto.setImageURI(Uri.fromFile(new File(newRoute)));
-                    //AQUI VAMOS A GUARDAR A LA BD
-                    insertarImagen(newRoute);
+                    uriFotoSeleccionada = uri;
+                    imgProducto.setImageURI(uri);
+                }
+            });
+    private final ActivityResultLauncher<Uri> seleccionaImagenCamara =
+            registerForActivityResult(new ActivityResultContracts.TakePicture(),resultado-> {
+                if(resultado!=null){
+                    uriFotoSeleccionada = uriImageCamara;
+                    imgProducto.setImageURI(uriImageCamara);
+                }else {
+                    Toast.makeText(this, "No se tomo la foto", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -105,49 +117,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
         btnGuardarGaleria.setOnClickListener(v -> {abrirGaleria();});
         btnGuardarCamara.setOnClickListener(v -> {validarPermisoCamara();});
 
-        btnGuardarProducto.setOnClickListener(v -> {
-
-            try {
-                //Validando los campos
-                if (validarCampos()){
-                    //Capturando los datos de los campos
-                    String nombre = txtNombre.getText().toString().trim().toUpperCase(),
-                            descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
-                            categoria = spCategoria.getSelectedItem().toString();
-
-                    double precio = Double.parseDouble(txtPrecio.getText().toString()),
-                            cantidad = Double.parseDouble(txtCantidad.getText().toString()),
-                            coordX = Double.parseDouble(txtCoordX.getText().toString()),
-                            coordY = Double.parseDouble(txtCoordY.getText().toString()),
-                            coordZ = Double.parseDouble(txtCoordZ.getText().toString());
-
-                    //Creando el objeto con todos los datos a guardar
-                    Producto producto = new Producto(nombre, categoria, descripcion,
-                            precio, cantidad, coordX, coordY, coordZ);
-                    //Obtener la instancia a la base de datos
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-                    //Crear la referencia a la tabla
-                    DatabaseReference productosRef = database.getReference("Productos");
-
-                    //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
-                    // y .setValue() inserta el objeto allí.
-                    String idProducto = productosRef.push().getKey();
-
-                    producto.setIdProducto(idProducto);
-
-                    productosRef.child(idProducto).setValue(producto);
-
-                    Toast.makeText(this, "Producto Registrado", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-
-            } catch (Exception e) {
-
-                Log.i("ERROR DB", "No se pudo subir los datos");
-                throw new RuntimeException(e);
-            }
-        });
+        btnGuardarProducto.setOnClickListener(v -> {guardarProducto();});
     }
     //Metodo para validar los campos
     private boolean validarCampos(){
@@ -307,17 +277,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
         }
     }
 
-    private final ActivityResultLauncher<Uri> seleccionaImagenCamara =
-            registerForActivityResult(new ActivityResultContracts.TakePicture(),resultado-> {
-                if(resultado!=null){
-                    imgProducto.setImageURI(uriImageCamara);
-                    insertarImagen(uriImageCamara.toString());
 
-
-                }else {
-                    Toast.makeText(this, "No se tomo la foto", Toast.LENGTH_SHORT).show();
-                }
-            });
 
     private File crearArchivoImagenCamara() throws IOException {
 
@@ -356,8 +316,62 @@ public class AgregarProductoActivity extends AppCompatActivity {
             );
         }
     }
+    private void guardarProducto(){
+        try {
+            //Validando los campos
+            if (validarCampos()){
+                if (uriFotoSeleccionada != null){
+                    //Capturando los datos de los campos
+                    String nombre = txtNombre.getText().toString().trim().toUpperCase(),
+                            descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
+                            categoria = spCategoria.getSelectedItem().toString();
 
-    public void insertarImagen(String newRoute){
-        //Insertar en db
+                    double precio = Double.parseDouble(txtPrecio.getText().toString()),
+                            cantidad = Double.parseDouble(txtCantidad.getText().toString()),
+                            coordX = Double.parseDouble(txtCoordX.getText().toString()),
+                            coordY = Double.parseDouble(txtCoordY.getText().toString()),
+                            coordZ = Double.parseDouble(txtCoordZ.getText().toString());
+
+                    //Subiendo la imagen al storage
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                            .child("imagenes_productos/" + System.currentTimeMillis() + ".jpg");
+
+                    storageRef.putFile(uriFotoSeleccionada)
+                            .continueWithTask(task -> storageRef.getDownloadUrl())
+                            .addOnSuccessListener(uri -> {
+                                urlImagenProducto = uri.toString();
+                                //Creando el objeto con todos los datos a guardar
+                                Producto producto = new Producto(urlImagenProducto,nombre, categoria, descripcion,
+                                        precio, cantidad, coordX, coordY, coordZ);
+                                //Obtener la instancia a la base de datos
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+                                //Crear la referencia a la tabla
+                                DatabaseReference productosRef = database.getReference("Productos");
+
+                                //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
+                                // y .setValue() inserta el objeto allí.
+                                String idProducto = productosRef.push().getKey();
+
+                                producto.setIdProducto(idProducto);
+
+                                productosRef.child(idProducto).setValue(producto);
+
+                                Toast.makeText(this, "Producto Registrado", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Error al subir imagen", Toast.LENGTH_SHORT).show();
+                            });
+                }else {
+                    Toast.makeText(this, "No se ha seleccionado una imagen.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        } catch (Exception e) {
+
+            Log.i("ERROR DB", "No se pudo subir los datos");
+            throw new RuntimeException(e);
+        }
     }
 }
