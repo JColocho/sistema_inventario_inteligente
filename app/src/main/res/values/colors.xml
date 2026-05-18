@@ -85,4 +85,35 @@
 
     <!-- KM / DISTANCIA -->
     <color name="distance_text">#00D4AA</color>
+
+
+    <!--    ESTILOS COLOCHO -->
+    <!-- ── Superficies ──────────────────────────────────────────────────── -->
+    <color name="paper">#0D0A1A</color>          <!-- Midnight purple-black — fondo principal -->
+    <color name="card">#1E1638</color>            <!-- Superficie de tarjetas — índigo profundo -->
+
+    <!-- ── Texto ─────────────────────────────────────────────────────────── -->
+    <color name="ink">#F2EDFF</color>             <!-- Blanco lavanda — texto principal -->
+    <color name="muted">#8B7AAA</color>           <!-- Violeta apagado — etiquetas secundarias -->
+    <color name="muted_2">#5A4D72</color>         <!-- Texto deshabilitado -->
+
+    <!-- ── Bordes ─────────────────────────────────────────────────────────── -->
+    <color name="line">#2E2448</color>            <!-- Borde sutil oscuro -->
+
+    <!-- ── Accent principal (violeta eléctrico) ──────────────────────────── -->
+    <color name="accent">#A78BFA</color>          <!-- Violet-400 — vivo sobre oscuro -->
+    <color name="accent_tint">#2D1F52</color>     <!-- Superficie con tinte violeta -->
+
+    <!-- ── Accent cálido — ámbar ──────────────────────────────────────────── -->
+    <color name="amber_deep">#F59E0B</color>      <!-- Amber-500 -->
+
+    <!-- ── Accent fresco — esmeralda ─────────────────────────────────────── -->
+    <color name="emerald">#34D399</color>         <!-- Emerald-400 — vivo sobre oscuro -->
+    <color name="emerald_deep">#059669</color>    <!-- Emerald-600 -->
+
+
+    <!-- ── Semánticos ────────────────────────────────────────────────────── -->
+    <color name="location_blue">#4285F4</color>      <!-- Azul Google Maps — punto de usuario -->
+
+
 </resources>

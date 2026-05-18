@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ── Tipografía ──────────────────────────────────────────────────── -->
+
+    <style name="TextDisplay">
+        <item name="android:fontFamily">@font/space_grotesk</item>
+        <item name="android:textSize">40sp</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:lineSpacingMultiplier">1.05</item>
+        <item name="android:letterSpacing">-0.035</item>
+    </style>
+
+    <style name="TextDisplayAccent" parent="TextDisplay">
+        <item name="android:textColor">@color/accent</item>
+    </style>
+
+    <style name="TextEyebrow">
+        <item name="android:fontFamily">@font/space_grotesk</item>
+        <item name="android:textSize">10.5sp</item>
+        <item name="android:letterSpacing">0.16</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/muted</item>
+    </style>
+
+
+    <style name="TextProductName">
+        <item name="android:fontFamily">@font/space_grotesk</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+</resources>
