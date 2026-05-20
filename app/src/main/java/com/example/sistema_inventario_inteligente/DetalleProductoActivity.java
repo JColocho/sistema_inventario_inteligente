@@ -1,5 +1,6 @@
 package com.example.sistema_inventario_inteligente;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -14,6 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
+import com.example.sistema_inventario_inteligente.glide.GlideApp;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
@@ -23,11 +27,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class DetalleProductoActivity extends AppCompatActivity {
-    private String idProducto = "";
+    private String idProducto = "", urlImagenRef = "", urlModelo3D;
     public TextView txtNombre, txtDescripcion, txtCategoria;
-    public ImageView imgProducto, btnCerrar, btnEliminar;
+    public ImageView imgProducto, btnCerrar, btnEliminar, btnEditar;
     private ProductoContrato productoRepositorio;
 
     @Override
@@ -49,31 +55,10 @@ public class DetalleProductoActivity extends AppCompatActivity {
         txtCategoria = findViewById(R.id.txtCategoriaDetalle);
         btnCerrar = findViewById(R.id.btnDetalleBack);
         btnEliminar = findViewById(R.id.btnElminarProducto);
+        btnEditar = findViewById(R.id.btnEditarView);
         idProducto = getIntent().getStringExtra("idProducto");
 
-        productoRepositorio.obtenerProductoId(idProducto, new ProductoContrato.LeerIdCallback() {
-            @Override
-            public void onProductoCargado(Producto productoObtenido) {
-                Producto producto = productoObtenido;
-                if (producto != null){
-                    txtNombre.setText(producto.getNombre());
-                    txtDescripcion.setText(producto.getDescripcion());
-                    txtCategoria.setText(producto.getCategoria());
 
-                    Glide.with(DetalleProductoActivity.this)
-                            .load(producto.getUrlImagenProducto())
-                            .placeholder(R.drawable.camara)
-                            .error(R.drawable.camara)
-                            .centerCrop()
-                            .into(imgProducto);
-                }
-            }
-
-            @Override
-            public void onError(String error) {
-                Toast.makeText(DetalleProductoActivity.this, error, Toast.LENGTH_SHORT).show();
-            }
-        });
 
         btnCerrar.setOnClickListener(v -> {finish();});
 
@@ -86,7 +71,7 @@ public class DetalleProductoActivity extends AppCompatActivity {
                     })
                     .setPositiveButton("Eliminar", (dialog, which) -> {
 
-                        productoRepositorio.eliminarProducto(idProducto, new ProductoContrato.OperacionCallback() {
+                        productoRepositorio.eliminarProducto(idProducto, urlImagenRef, urlModelo3D, new ProductoContrato.OperacionCallback() {
                             @Override
                             public void onExito(String mensaje) {
                                 Toast.makeText(DetalleProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
@@ -99,6 +84,59 @@ public class DetalleProductoActivity extends AppCompatActivity {
                         });
                     })
                     .show();
+        });
+
+        btnEditar.setOnClickListener(v -> {
+            Intent intent = new Intent(DetalleProductoActivity.this, EditarProductoActivity.class);
+            intent.putExtra("idProducto", idProducto);
+            startActivity(intent);
+        });
+
+        cargarDatosProducto();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarDatosProducto();
+    }
+
+    private void cargarDatosProducto(){
+        productoRepositorio.obtenerProductoId(idProducto, new ProductoContrato.LeerIdCallback() {
+            @Override
+            public void onProductoCargado(Producto productoObtenido) {
+                Producto producto = productoObtenido;
+                urlImagenRef = producto.getUrlImagenProducto();
+                urlModelo3D = producto.getUrlModelo3D();
+
+                //Validando que ser encontró el producto.
+                if (producto != null){
+                    //Mostrar los datos del producto
+                    txtNombre.setText(producto.getNombre());
+                    txtDescripcion.setText(producto.getDescripcion());
+                    txtCategoria.setText(producto.getCategoria());
+
+                    StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(producto.getUrlImagenProducto());
+
+                    //Cargar las imagen en el imageView
+                    GlideApp.with(DetalleProductoActivity.this)
+                            .load(imageRef)
+                            .placeholder(R.drawable.camara)
+                            .error(R.drawable.camara)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .centerCrop()
+                            .into(imgProducto);
+                }
+                else {
+                    finish();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
         });
     }
 }

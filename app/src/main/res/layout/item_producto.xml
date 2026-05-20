@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/item_producto.xml — Card de cada producto en el RecyclerView -->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -36,25 +35,7 @@
                 android:scaleType="centerCrop" />
 
 
-            <TextView
-                android:id="@+id/tvBadge3D"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="4dp"
-                android:background="@drawable/bg_badge_teal"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:text="3D"
-                android:textColor="@color/bg_primary"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Nombre del producto -->
         <TextView
             android:id="@+id/tvNombreProducto"
             android:layout_width="0dp"

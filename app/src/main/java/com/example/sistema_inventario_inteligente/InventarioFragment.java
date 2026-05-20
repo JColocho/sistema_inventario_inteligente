@@ -71,7 +71,9 @@ public class InventarioFragment extends Fragment {
         });
 
         rvProducto.setAdapter(productoAdapater);
-        // Inflate the layout for this fragment
+
+        cargarProductos();
+
         return view;
     }
 
@@ -80,9 +82,10 @@ public class InventarioFragment extends Fragment {
         super.onResume();
         cargarProductos();
     }
+
     //Metodo para cargar los datos en tiempo real
     private void cargarProductos(){
-        repositorio.obtenerProductosEnTiempoReal(new ProductoContrato.LeerCallback() {
+        repositorio.obtenerProductosEnTiempoReal("", new ProductoContrato.LeerCallback() {
             @Override
             public void onProductosCargados(List<Producto> productos) {
                 listaProductos.clear();
@@ -92,7 +95,10 @@ public class InventarioFragment extends Fragment {
 
             @Override
             public void onError(String error) {
-                Toast.makeText(InventarioFragment.newInstance().getContext(), error, Toast.LENGTH_SHORT).show();
+                //  Usamos el contexto nativo del fragmento actual de forma segura
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

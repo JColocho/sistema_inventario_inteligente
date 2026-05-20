@@ -14,10 +14,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.sistema_inventario_inteligente.DetalleProductoActivity;
 import com.example.sistema_inventario_inteligente.R;
+import com.example.sistema_inventario_inteligente.glide.GlideApp;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.google.android.material.chip.Chip;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -43,11 +48,14 @@ public class ProductoAdapater extends RecyclerView.Adapter<ProductoAdapater.Prod
 
         idProducto = producto.getIdProducto();
 
-        Glide.with(context)
-                .load(producto.getUrlImagenProducto())
-                .placeholder(R.drawable.camara) // imagen mientras carga
-                .error(R.drawable.camara)        // imagen si falla
-                .centerCrop()
+        StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(producto.getUrlImagenProducto());
+
+        GlideApp.with(context)
+                .load(imageRef)
+                .placeholder(R.drawable.camara)
+                .error(R.drawable.camara)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(holder.imgProducto);
 
         holder.tvNombre.setText(producto.getNombre());
