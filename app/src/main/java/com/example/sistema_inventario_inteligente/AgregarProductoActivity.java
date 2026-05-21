@@ -1,17 +1,21 @@
 package com.example.sistema_inventario_inteligente;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,36 +32,35 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
+import com.example.sistema_inventario_inteligente.models.ProductoContrato;
+import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class AgregarProductoActivity extends AppCompatActivity {
-    public ImageView btnAtras, imgProducto;
-    public Button btnGuardarGaleria, btnGuardarCamara, btnGuardarProducto;
+    public ImageView btnAtras, imgProducto, btnQuitarModelo;
+    public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo , btnGuardarProducto;
     public EditText txtNombre, txtDescripcion, txtPrecio,
-            txtCantidad,txtCoordX, txtCoordY, txtCoordZ;
+            txtCantidad;
     public String rutaCamara;
     private Uri uriImageCamara;
+    private Uri uriModeloSelccionado = null;
     private Uri uriFotoSeleccionada = null;
     private String urlImagenProducto = "";
     private String urlModelo3D = "";
     public ArrayList<Categoria> listaCategorias;
     public ArrayAdapter<Categoria> adapterCategoria;
     public Spinner spTiendas, spCategoria;
+    private ProductoContrato repositorio = new ProductoRepository();
+    public LinearLayout layoutModeloSeleccionado;
+    public TextView txtNombreModelo;
 
     private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri ->{
@@ -75,6 +78,17 @@ public class AgregarProductoActivity extends AppCompatActivity {
                     Toast.makeText(this, "No se tomo la foto", Toast.LENGTH_SHORT).show();
                 }
             });
+    private final ActivityResultLauncher<String[]> selectorModelo =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri != null) {
+                    // Persiste el permiso para poder leerlo después
+                    getContentResolver().takePersistableUriPermission(
+                            uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    );
+                    uriModeloSelccionado = uri;
+                    mostrarModeloSeleccionado(uri);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +100,23 @@ public class AgregarProductoActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        btnAtras = findViewById(R.id.btnAddBack);
         imgProducto = findViewById(R.id.imgProductoRef);
+
+        layoutModeloSeleccionado = findViewById(R.id.layoutModeloSeleccionado);
+
+        txtNombreModelo = findViewById(R.id.txtNombreModelo);
         txtNombre = findViewById(R.id.txtNombreProductoAdd);
         txtDescripcion = findViewById(R.id.txtDescripcionAdd);
         txtPrecio = findViewById(R.id.txtPrecioAdd);
         txtCantidad = findViewById(R.id.txtCantidadAdd);
-        txtCoordX = findViewById(R.id.txtCoordXAdd);
-        txtCoordY = findViewById(R.id.txtCoordYAdd);
-        txtCoordZ = findViewById(R.id.txtCoordZAdd);
+
         spCategoria = findViewById(R.id.spCategoriaAdd);
+
+
+        btnAtras = findViewById(R.id.btnAddBack);
         btnGuardarCamara = findViewById(R.id.btnCamaraAddProducto);
+        btnSeleccionarModelo = findViewById(R.id.btnSeleccionarModelo);
+        btnQuitarModelo = findViewById(R.id.btnQuitarModelo);
         btnGuardarGaleria = findViewById(R.id.btnGaleriaAddProducto);
         btnGuardarProducto = findViewById(R.id.btnGuardarProducto);
 
@@ -112,6 +131,15 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
         btnAtras.setOnClickListener(v -> {
             finish();
+        });
+
+        btnSeleccionarModelo.setOnClickListener(v -> {
+            selectorModelo.launch(new String[]{"*/*"});
+        });
+
+        btnQuitarModelo.setOnClickListener(v -> {
+            uriModeloSelccionado = null;
+            layoutModeloSeleccionado.setVisibility(View.GONE);
         });
 
         btnGuardarGaleria.setOnClickListener(v -> {abrirGaleria();});
@@ -143,21 +171,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
         if (txtCantidad.getText().toString().trim().isEmpty() ||
                 Double.parseDouble(txtCantidad.getText().toString()) <= 0){
             txtCantidad.setError("Cantidad invalido.");
-            return false;
-        }
-
-        if (txtCoordX.getText().toString().trim().isEmpty()){
-            txtCoordX.setError("Coordenada invalido.");
-            return false;
-        }
-
-        if (txtCoordY.getText().toString().trim().isEmpty()){
-            txtCoordY.setError("Coordenada invalido.");
-            return false;
-        }
-
-        if (txtCoordZ.getText().toString().trim().isEmpty()){
-            txtCoordZ.setError("Coordenada invalido.");
             return false;
         }
 
@@ -193,49 +206,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
                 .build());
 
 
-    }
-
-    private String copiarImagenApp(Uri uriOriginal) {
-        try {
-
-            InputStream inputStream =
-                    getContentResolver().openInputStream(uriOriginal);
-
-            String nombreArchivo =
-                    "IMG_" + System.currentTimeMillis() + ".jpg";
-
-            File directorio =
-                    new File(getFilesDir(), "imagenes");
-
-            if (!directorio.exists()) {
-                directorio.mkdirs();
-            }
-
-            File archivoDestino =
-                    new File(directorio, nombreArchivo);
-
-            OutputStream outputStream =
-                    new FileOutputStream(archivoDestino);
-
-            byte[] buffer = new byte[4096];
-            int bytesLeidos;
-
-            while ((bytesLeidos = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesLeidos);
-            }
-
-            inputStream.close();
-            outputStream.close();
-
-            return archivoDestino.getAbsolutePath();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        return null;
     }
 
     private final ActivityResultLauncher<String> seleccionaImagenCamara2 =
@@ -316,53 +286,89 @@ public class AgregarProductoActivity extends AppCompatActivity {
             );
         }
     }
+    private void mostrarModeloSeleccionado(Uri uri) {
+        // Obtiene el nombre real del archivo
+        String nombreArchivo = "modelo.glb"; // fallback
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            if (index >= 0) nombreArchivo = cursor.getString(index);
+            cursor.close();
+        }
+
+        txtNombreModelo.setText(nombreArchivo);
+        layoutModeloSeleccionado.setVisibility(View.VISIBLE);
+    }
     private void guardarProducto(){
         try {
             //Validando los campos
             if (validarCampos()){
-                if (uriFotoSeleccionada != null){
-                    //Capturando los datos de los campos
-                    String nombre = txtNombre.getText().toString().trim().toUpperCase(),
-                            descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
-                            categoria = spCategoria.getSelectedItem().toString();
+                //Capturando los datos de los campos
+                String nombre = txtNombre.getText().toString().trim().toUpperCase(),
+                        descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
+                        categoria = spCategoria.getSelectedItem().toString();
 
-                    double precio = Double.parseDouble(txtPrecio.getText().toString()),
-                            cantidad = Double.parseDouble(txtCantidad.getText().toString()),
-                            coordX = Double.parseDouble(txtCoordX.getText().toString()),
-                            coordY = Double.parseDouble(txtCoordY.getText().toString()),
-                            coordZ = Double.parseDouble(txtCoordZ.getText().toString());
+                double precio = Double.parseDouble(txtPrecio.getText().toString()),
+                        cantidad = Double.parseDouble(txtCantidad.getText().toString());
+
+                //Validando que se haya seleccionado una imagen de referencia
+                //del producto
+                if (uriFotoSeleccionada != null){
+
 
                     //Subiendo la imagen al storage
-                    StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                            .child("imagenes_productos/" + System.currentTimeMillis() + ".jpg");
+                    repositorio.subirImagenStorage(uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
+                        @Override
+                        public void onExito(String urlDescarga) {
+                            //Obteniendo la URL de la imagen
+                            urlImagenProducto = urlDescarga;
 
-                    storageRef.putFile(uriFotoSeleccionada)
-                            .continueWithTask(task -> storageRef.getDownloadUrl())
-                            .addOnSuccessListener(uri -> {
-                                urlImagenProducto = uri.toString();
-                                //Creando el objeto con todos los datos a guardar
-                                Producto producto = new Producto(urlImagenProducto,nombre, categoria, descripcion,
-                                        precio, cantidad, coordX, coordY, coordZ);
-                                //Obtener la instancia a la base de datos
-                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            //Validando que se haya seleccionado el modelo 3D del producto
+                            if (uriModeloSelccionado != null){
 
-                                //Crear la referencia a la tabla
-                                DatabaseReference productosRef = database.getReference("Productos");
+                                //Subiendo el modelo 3D al storage
+                                repositorio.subirModelo3DStorage(uriModeloSelccionado, new ProductoContrato.StorageCallBack() {
+                                    @Override
+                                    public void onExito(String urlDescarga) {
+                                        //Obtenemos la URL del modelo 3D
+                                        urlModelo3D = urlDescarga;
 
-                                //.push() crea un ID único aleatorio (ej. -NjsdH83jd9) para que no se dupliquen
-                                // y .setValue() inserta el objeto allí.
-                                String idProducto = productosRef.push().getKey();
+                                        //Capturamos todos lo datos del producto en el objeto
+                                        Producto producto = new Producto(urlImagenProducto, urlModelo3D,nombre, categoria, descripcion,
+                                                precio, cantidad);
 
-                                producto.setIdProducto(idProducto);
+                                        //Hacemos la inserción en el repositorio
+                                        repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {
+                                            @Override
+                                            public void onExito(String mensaje) {
+                                                Toast.makeText(AgregarProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                                                finish();
+                                            }
 
-                                productosRef.child(idProducto).setValue(producto);
+                                            @Override
+                                            public void onError(String error) {
+                                                Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
 
-                                Toast.makeText(this, "Producto Registrado", Toast.LENGTH_SHORT).show();
-                                finish();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error al subir imagen", Toast.LENGTH_SHORT).show();
-                            });
+                                    @Override
+                                    public void onError(String error) {
+                                        Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                            else {
+                                Toast.makeText(AgregarProductoActivity.this, "No se ha seleccionado un modelo 3D.", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }else {
                     Toast.makeText(this, "No se ha seleccionado una imagen.", Toast.LENGTH_SHORT).show();
                 }
