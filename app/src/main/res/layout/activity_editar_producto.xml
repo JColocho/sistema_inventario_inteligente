@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_primary"
     android:fillViewport="true"
+    android:isScrollContainer="true"
     tools:context=".EditarProductoActivity">
 
     <LinearLayout
@@ -15,13 +16,12 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Encabezado -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="24dp">
 
             <ImageView
                 android:id="@+id/btnEditarBack"
@@ -32,306 +32,355 @@
                 app:tint="@color/accent_teal" />
 
             <TextView
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:text="Editar Producto"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/accent_teal"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
-        <!-- Imagen de referencia -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/bg_image_picker"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/imgProductoEditar"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:background="@drawable/bg_img"
-                tools:srcCompat="@tools:sample/avatars" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Imagen de Referencia"
-                android:textAlignment="center"
-                android:textColor="@color/text_primary"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <!-- Botones de imagen -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SUBIR IMAGEN DE REFERENCIA *"
-            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="8dp"
+            android:text="IMAGEN DE REFERENCIA *"
+            android:textColor="@color/nav_inactive"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnCamaraEditarProducto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_button"
-                android:text="Abrir Camara"
-                app:icon="@drawable/camara"
-                app:iconGravity="top"
-                app:iconSize="30dp" />
-
-            <Button
-                android:id="@+id/btnGaleriaEditarProducto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_button"
-                android:text="Abrir Galeria"
-                app:icon="@drawable/galeria_imagenes"
-                app:iconGravity="top"
-                app:iconSize="30dp" />
-        </LinearLayout>
-
-        <!-- Nombre -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="NOMBRE DEL PRODUCTO *"
-                android:textColor="@color/text_secondary"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/txtNombreProductoEditar"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/bg_field_teal"
-                android:ems="10"
-                android:hint="Ej. Laptop ASUS A16"
-                android:inputType="text"
-                android:padding="10dp" />
-        </LinearLayout>
-
-        <!-- Descripción -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="DESCRIPCION *"
-                android:textColor="@color/text_secondary"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/txtDescripcionEditar"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@drawable/bg_field_teal"
-                android:ems="10"
-                android:gravity="start"
-                android:hint="Ej. Ryzen 7 7000, RX7000, 16GB RAM"
-                android:inputType="text|textMultiLine"
-                android:padding="10dp" />
-        </LinearLayout>
-
-        <!-- Categoría -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="SELECCIONAR CATEGORIA *"
-                android:textColor="@color/text_secondary"
-                android:textStyle="bold" />
-
-            <Spinner
-                android:id="@+id/spCategoriaEditar"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/bg_field_teal"
-                android:padding="10dp" />
-
-        </LinearLayout>
-
-        <!-- Precio y Cantidad -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal">
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/border_default"
+            app:strokeWidth="1dp">
 
             <LinearLayout
-                android:layout_width="183dp"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:paddingRight="10dp">
+                android:padding="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/imgProductoEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:background="@color/bg_primary"
+                        tools:srcCompat="@drawable/camara" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnCamaraEditarProducto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:text="Abrir Camara"
+                        app:icon="@drawable/camara"
+                        app:iconGravity="top"
+                        app:iconSize="30dp" />
+
+                    <Button
+                        android:id="@+id/btnGaleriaEditarProducto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:text="Abrir Galeria"
+                        app:icon="@drawable/galeria_imagenes"
+                        app:iconGravity="top"
+                        app:iconSize="30dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/border_default"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PRECIO *"
-                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="8dp"
+                    android:text="NOMBRE DEL PRODUCTO *"
+                    android:textColor="@color/nav_inactive"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtPrecioEditar"
+                    android:id="@+id/txtNombreProductoEdit"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_field_teal"
-                    android:ems="10"
-                    android:hint="$0.00"
-                    android:inputType="number|numberDecimal"
-                    android:padding="10dp"
-                    android:textAlignment="textEnd" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingLeft="10dp">
+                    android:hint="Ej. Laptop ASUS A16"
+                    android:textColorHint="#556677"
+                    android:textColor="#FFFFFF"
+                    android:inputType="text"
+                    android:padding="12dp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="CANTIDAD *"
-                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="8dp"
+                    android:text="SELECCIONAR CATEGORÍA *"
+                    android:textColor="@color/nav_inactive"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spCategoriaEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/bg_field_teal"
+                    android:padding="12dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="DESCRIPCIÓN *"
+                    android:textColor="@color/nav_inactive"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/txtCantidadEditar"
+                    android:id="@+id/txtDescripcionEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_field_teal"
+                    android:gravity="top|start"
+                    android:hint="Ej. Ryzen 7 7000, RX7000, 16GB RAM"
+                    android:textColorHint="#556677"
+                    android:textColor="#FFFFFF"
+                    android:inputType="textMultiLine"
+                    android:padding="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/border_default"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:text="PRECIO *"
+                            android:textColor="@color/nav_inactive"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/txtPrecioEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:background="@drawable/bg_field_teal"
+                            android:hint="$0.00"
+                            android:textColorHint="#556677"
+                            android:textColor="@color/accent_teal"
+                            android:inputType="numberDecimal"
+                            android:padding="12dp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:text="CANTIDAD *"
+                            android:textColor="@color/nav_inactive"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/txtCantidadEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:background="@drawable/bg_field_teal"
+                            android:hint="0"
+                            android:textColorHint="#556677"
+                            android:textColor="#FFFFFF"
+                            android:inputType="number"
+                            android:padding="12dp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="SELECCIONAR SUCURSAL *"
+                    android:textColor="@color/nav_inactive"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spSucursalEdit"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_field_teal"
-                    android:ems="10"
-                    android:hint="0"
-                    android:inputType="number"
-                    android:padding="10dp"
-                    android:textAlignment="textEnd" />
+                    android:padding="12dp" />
             </LinearLayout>
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Sucursal (sin cambios) -->
-        <LinearLayout
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="SELECCIONAR SUCURSAL *"
-                android:textColor="@color/text_secondary"
-                android:textStyle="bold" />
-
-            <Spinner
-                android:id="@+id/spSucursalEditar"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/bg_field_teal"
-                android:padding="10dp" />
-
-        </LinearLayout>
-
-        <!-- Modelo 3D -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="MODELO 3D (.glb) *"
-                android:textColor="@color/text_secondary"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnSeleccionarModelo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_button"
-                android:text="Seleccionar archivo .glb"
-                app:icon="@drawable/ic_upload"
-                app:iconGravity="textStart" />
+            android:layout_marginBottom="32dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/border_default"
+            app:strokeWidth="1dp">
 
             <LinearLayout
-                android:id="@+id/layoutModeloSeleccionado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_field_teal"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_upload"
-                    app:tint="@color/accent_teal" />
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/txtNombreModelo"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:ellipsize="middle"
-                    android:maxLines="1"
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
+                    android:layout_marginBottom="12dp"
+                    android:text="MODELO 3D (.glb) *"
+                    android:textColor="@color/nav_inactive"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/btnQuitarModelo"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/cruz_roja"
-                    app:tint="@color/status_error" />
+                <Button
+                    android:id="@+id/btnSeleccionarModelo"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:background="@drawable/bg_button"
+                    android:text="Seleccionar archivo .glb"
+                    android:textStyle="bold"
+                    app:icon="@drawable/ic_upload"
+                    app:iconGravity="textStart"
+                    app:iconTint="#000000" />
 
+                <LinearLayout
+                    android:id="@+id/layoutModeloSeleccionado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_field_teal"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:srcCompat="@drawable/ic_upload"
+                        app:tint="@color/text_primary"/>
+
+                    <TextView
+                        android:id="@+id/txtNombreModelo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:ellipsize="middle"
+                        android:maxLines="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/btnQuitarModelo"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:padding="4dp"
+                        app:srcCompat="@drawable/cruz_roja" />
+
+                </LinearLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
-
-        <!-- Botón actualizar -->
         <Button
             android:id="@+id/btnEditarProducto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/bg_button"
-            android:text="ACTUALIZAR PRODUCTO" />
+            android:text="ACTUALIZAR PRODUCTO"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </ScrollView>

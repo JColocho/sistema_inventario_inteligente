@@ -97,7 +97,13 @@ public class AgregarProductoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_agregar_producto);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    Math.max(systemBars.bottom, imeInsets.bottom)
+            );
             return insets;
         });
         imgProducto = findViewById(R.id.imgProductoRef);
@@ -145,7 +151,10 @@ public class AgregarProductoActivity extends AppCompatActivity {
         btnGuardarGaleria.setOnClickListener(v -> {abrirGaleria();});
         btnGuardarCamara.setOnClickListener(v -> {validarPermisoCamara();});
 
-        btnGuardarProducto.setOnClickListener(v -> {guardarProducto();});
+        btnGuardarProducto.setOnClickListener(v -> {
+            btnGuardarProducto.setEnabled(false);
+            guardarProducto();
+        });
     }
     //Metodo para validar los campos
     private boolean validarCampos(){
@@ -348,6 +357,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
                                             @Override
                                             public void onError(String error) {
                                                 Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                                                btnGuardarProducto.setEnabled(true);
                                             }
                                         });
                                     }

@@ -32,7 +32,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class DetalleProductoActivity extends AppCompatActivity {
     private String idProducto = "", urlImagenRef = "", urlModelo3D;
-    public TextView txtNombre, txtDescripcion, txtCategoria;
+    public TextView txtNombre, txtDescripcion, txtCategoria, txtPrecio, txtCantidad;
     public ImageView imgProducto, btnCerrar, btnEliminar, btnEditar;
     private ProductoContrato productoRepositorio;
 
@@ -53,6 +53,8 @@ public class DetalleProductoActivity extends AppCompatActivity {
         txtNombre = findViewById(R.id.txtNombreDetalle);
         txtDescripcion = findViewById(R.id.txtDescripcioDetalle);
         txtCategoria = findViewById(R.id.txtCategoriaDetalle);
+        txtPrecio = findViewById(R.id.txtPrecioDetalle);
+        txtCantidad = findViewById(R.id.txtCantidadDetalle);
         btnCerrar = findViewById(R.id.btnDetalleBack);
         btnEliminar = findViewById(R.id.btnElminarProducto);
         btnEditar = findViewById(R.id.btnEditarView);
@@ -115,6 +117,8 @@ public class DetalleProductoActivity extends AppCompatActivity {
                     txtNombre.setText(producto.getNombre());
                     txtDescripcion.setText(producto.getDescripcion());
                     txtCategoria.setText(producto.getCategoria());
+                    txtPrecio.setText(String.format("$%.2f", producto.getPrecio()));
+                    txtCantidad.setText(producto.getCantidad().toString());
 
                     StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(producto.getUrlImagenProducto());
 

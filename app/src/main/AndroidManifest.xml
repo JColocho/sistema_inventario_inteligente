@@ -41,6 +41,10 @@
         </activity>
 
         <activity
+            android:name=".AgregarProductoActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
                     <intent-filter>
@@ -51,12 +55,9 @@
         </activity>
         <activity
             android:name=".EditarProductoActivity"
-            android:exported="false" />
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".DetalleProductoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AgregarProductoActivity"
             android:exported="false" />
 
         <provider
