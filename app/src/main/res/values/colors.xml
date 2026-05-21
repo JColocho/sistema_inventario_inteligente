@@ -115,5 +115,12 @@
     <!-- ── Semánticos ────────────────────────────────────────────────────── -->
     <color name="location_blue">#4285F4</color>      <!-- Azul Google Maps — punto de usuario -->
 
+    <!-- AR / EscanearActivity -->
+    <color name="white">#FFFFFF</color>
+    <color name="ar_hud_bg">#CC0D1117</color>        <!-- Fondo semi-transparente para HUD flotante -->
+    <color name="ar_panel_bg">#F0162030</color>      <!-- Fondo del panel inferior AR -->
+    <color name="ar_coord_color">#00D4AA</color>     <!-- Color de coordenadas y precio en AR -->
+    <color name="ar_coord_label">#8B9AB0</color>     <!-- Etiquetas X/Y/Z (muted) -->
+    <color name="ar_divider">#2E3D50</color>         <!-- Divisor dentro del panel AR -->
 
 </resources>

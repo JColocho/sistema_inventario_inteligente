@@ -67,6 +67,9 @@
         <activity
             android:name=".DetalleProductoActivity"
             android:exported="false" />
+        <activity
+            android:name=".ar.EscanearActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
