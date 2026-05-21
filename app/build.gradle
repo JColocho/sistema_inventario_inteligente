@@ -22,6 +22,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    android {
+        // El .tflite no debe comprimirse: LiteRT necesita leerlo sin descomprimir.
+        androidResources { noCompress 'tflite' }
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -50,6 +54,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.google.android.gms:play-services-location:21.3.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
+    implementation 'com.google.ai.edge.litert:litert:2.1.5'     // IA en dispositivo
+    implementation 'com.google.ar:core:1.45.0'                // ARCore
+    implementation 'io.github.sceneview:arsceneview:2.2.1'     // vista AR + render 3D
+
     implementation libs.cardview
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
