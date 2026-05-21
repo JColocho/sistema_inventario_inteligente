@@ -22,7 +22,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -30,26 +29,22 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.sistema_inventario_inteligente.glide.GlideApp;
-import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class EditarProductoActivity extends AppCompatActivity {
+
+    private static final String[] CATEGORIAS = {
+            "Computadoras", "Smartphones", "Tablets", "Televisores", "Audio", "Otro"
+    };
 
     // Views
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
@@ -66,10 +61,6 @@ public class EditarProductoActivity extends AppCompatActivity {
     private Uri uriModeloSeleccionado = null;        // null = no se cambió el modelo
     private Uri uriFotoSeleccionada = null;          // null = no se cambió la imagen
     private String rutaCamara;
-
-    // Categorías
-    public ArrayList<Categoria> listaCategorias;
-    public ArrayAdapter<Categoria> adapterCategoria;
 
     // Repositorio
     private final ProductoContrato repositorio = new ProductoRepository();
@@ -164,11 +155,9 @@ public class EditarProductoActivity extends AppCompatActivity {
 
 
     private void configurarSpinnerCategorias() {
-        listaCategorias  = new ArrayList<>();
-        adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, listaCategorias);
+        ArrayAdapter<String> adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, CATEGORIAS);
         adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);
         spCategoria.setAdapter(adapterCategoria);
-        cargarCategorias();
     }
 
     private void configurarListeners() {
@@ -237,37 +226,10 @@ public class EditarProductoActivity extends AppCompatActivity {
         });
     }
 
-    private void cargarCategorias() {
-        DatabaseReference categoriaRef = FirebaseDatabase.getInstance().getReference("Categorias");
-
-        categoriaRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listaCategorias.clear();
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    Categoria categoria = ds.getValue(Categoria.class);
-                    listaCategorias.add(categoria);
-                }
-                adapterCategoria.notifyDataSetChanged();
-
-                // Una vez cargadas, intentar seleccionar la categoría del producto
-                if (productoActual != null) {
-                    seleccionarCategoriaEnSpinner(productoActual.getCategoria());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(EditarProductoActivity.this,
-                        "Error al cargar categorías.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void seleccionarCategoriaEnSpinner(String nombreCategoria) {
-        if (nombreCategoria == null || listaCategorias.isEmpty()) return;
-        for (int i = 0; i < listaCategorias.size(); i++) {
-            if (listaCategorias.get(i).toString().equalsIgnoreCase(nombreCategoria)) {
+        if (nombreCategoria == null) return;
+        for (int i = 0; i < CATEGORIAS.length; i++) {
+            if (CATEGORIAS[i].equalsIgnoreCase(nombreCategoria)) {
                 spCategoria.setSelection(i);
                 return;
             }
@@ -313,7 +275,7 @@ public class EditarProductoActivity extends AppCompatActivity {
             productoNuevo = new Producto(productoActual.getUrlImagenProducto(), productoActual.getUrlModelo3D(),
                     txtNombre.getText().toString().trim().toUpperCase(), spCategoria.getSelectedItem().toString(),
                     txtDescripcion.getText().toString().trim().toUpperCase(), Double.parseDouble(txtPrecio.getText().toString().trim()),
-                    Double.parseDouble(txtCantidad.getText().toString().trim()), "");
+                    Double.parseDouble(txtCantidad.getText().toString().trim()), productoActual.getIdSucursal());
 
             productoNuevo.setIdProducto(productoActual.getIdProducto());
 

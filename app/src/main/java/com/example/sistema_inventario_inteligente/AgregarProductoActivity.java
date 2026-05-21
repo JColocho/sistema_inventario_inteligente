@@ -30,7 +30,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
@@ -46,6 +45,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class AgregarProductoActivity extends AppCompatActivity {
+
+    private static final String[] CATEGORIAS = {
+            "Computadoras", "Smartphones", "Tablets", "Televisores", "Audio", "Otro"
+    };
+
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
     public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo , btnGuardarProducto;
     public EditText txtNombre, txtDescripcion, txtPrecio,
@@ -56,9 +60,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
     private Uri uriFotoSeleccionada = null;
     private String urlImagenProducto = "";
     private String urlModelo3D = "";
-    public ArrayList<Categoria> listaCategorias;
     public ArrayList<Sucursal> listaSucursales;
-    public ArrayAdapter<Categoria> adapterCategoria;
     public ArrayAdapter<Sucursal> adapterSucursal;
     public Spinner spSucursales, spCategoria;
     private ProductoContrato repositorio = new ProductoRepository();
@@ -133,17 +135,11 @@ public class AgregarProductoActivity extends AppCompatActivity {
         listaSucursales = new ArrayList<>();
         adapterSucursal = new ArrayAdapter<>(this, R.layout.spinner_item, listaSucursales);
         adapterSucursal.setDropDownViewResource(R.layout.spinner_dropdown);
-
+        spSucursales.setAdapter(adapterSucursal);
         cargarSucursales();
 
-        spSucursales.setAdapter(adapterSucursal);
-
-        listaCategorias = new ArrayList<>();
-        adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, listaCategorias);
+        ArrayAdapter<String> adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, CATEGORIAS);
         adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);
-
-        cargarCategorias();
-
         spCategoria.setAdapter(adapterCategoria);
 
 
@@ -196,29 +192,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-    private void cargarCategorias(){
-        DatabaseReference categoriaRef = FirebaseDatabase.getInstance().getReference("Categorias");
-
-        categoriaRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listaCategorias.clear();
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    Categoria categoria = dataSnapshot.getValue(Categoria.class);
-                    listaCategorias.add(categoria);
-                }
-
-                adapterCategoria.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
     }
 
     private void cargarSucursales(){
