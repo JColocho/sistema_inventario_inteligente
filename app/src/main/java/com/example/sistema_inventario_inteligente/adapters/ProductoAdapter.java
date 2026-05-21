@@ -18,7 +18,13 @@ import com.example.sistema_inventario_inteligente.DetalleProductoActivity;
 import com.example.sistema_inventario_inteligente.R;
 import com.example.sistema_inventario_inteligente.glide.GlideApp;
 import com.example.sistema_inventario_inteligente.models.Producto;
+import com.example.sistema_inventario_inteligente.models.Sucursal;
 import com.google.android.material.chip.Chip;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -73,6 +79,19 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
             holder.chipStock.setText("Sin Stock");
         }
 
+        DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
+        sucursalRef.child(producto.getIdSucursal()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.tvSucursal.setText(snapshot.getValue(Sucursal.class).getNombre());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         holder.btnDetalle.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetalleProductoActivity.class);
             intent.putExtra("idProducto", producto.getIdProducto());
@@ -86,7 +105,7 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
     }
 
     public static class ProductoVH extends RecyclerView.ViewHolder {
-        public TextView tvNombre, tvPrecio, tvUnidades;
+        public TextView tvNombre, tvPrecio, tvUnidades, tvSucursal;
         public ImageView imgProducto, btnDetalle;
         public Chip chipCategoria, chipStock;
 
@@ -99,6 +118,7 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
             tvUnidades    = itemView.findViewById(R.id.tvUnidades);
             chipCategoria = itemView.findViewById(R.id.chipCategoria);
             chipStock     = itemView.findViewById(R.id.chipStock);
+            tvSucursal    = itemView.findViewById(R.id.tvSucursalProducto);
         }
     }
 }

@@ -249,22 +249,30 @@ public class ProductoRepository implements ProductoContrato{
         } catch (Exception e) {
             Log.w("ProductoRepository", "vectoresIA en formato antiguo en " + ds.getKey() + ", omitiendo vector");
             Producto p = new Producto();
-            if (ds.child("nombre").getValue() != null)
+            if (ds.child("nombre").getValue() != null) {
                 p.setNombre(ds.child("nombre").getValue(String.class));
-            if (ds.child("categoria").getValue() != null)
+            }
+            if (ds.child("categoria").getValue() != null) {
                 p.setCategoria(ds.child("categoria").getValue(String.class));
-            if (ds.child("descripcion").getValue() != null)
+            }
+            if (ds.child("descripcion").getValue() != null) {
                 p.setDescripcion(ds.child("descripcion").getValue(String.class));
-            if (ds.child("precio").getValue() != null)
+            }
+            if (ds.child("precio").getValue() != null) {
                 p.setPrecio(ds.child("precio").getValue(Double.class));
-            if (ds.child("cantidad").getValue() != null)
+            }
+            if (ds.child("cantidad").getValue() != null) {
                 p.setCantidad(ds.child("cantidad").getValue(Double.class));
-            if (ds.child("urlImagenProducto").getValue() != null)
+            }
+            if (ds.child("urlImagenProducto").getValue() != null) {
                 p.setUrlImagenProducto(ds.child("urlImagenProducto").getValue(String.class));
-            if (ds.child("urlModelo3D").getValue() != null)
+            }
+            if (ds.child("urlModelo3D").getValue() != null) {
                 p.setUrlModelo3D(ds.child("urlModelo3D").getValue(String.class));
-            if (ds.child("idSucursal").getValue() != null)
+            }
+            if (ds.child("idSucursal").getValue() != null) {
                 p.setIdSucursal(ds.child("idSucursal").getValue(String.class));
+            }
             return p;
         }
     }

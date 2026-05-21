@@ -134,6 +134,19 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/accent_teal" />
 
+        <TextView
+            android:id="@+id/tvSucursalProducto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:text="Sucursal"
+            android:textColor="@color/accent_teal"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintStart_toEndOf="@+id/cardImagen"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrecio" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

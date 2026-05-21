@@ -136,7 +136,7 @@ public class EscanearActivity extends AppCompatActivity {
         iniciarCargaEmbeddings();
     }
 
-    // ── Retículo pulsante ─────────────────────────────────────────────────
+    //Retículo pulsante
     private void iniciarPulsoReticulo() {
         pulsoReticuloAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 binding.viewReticuloRing,
@@ -157,7 +157,7 @@ public class EscanearActivity extends AppCompatActivity {
         binding.layoutReticulo.setVisibility(View.GONE);
     }
 
-    // ── Configuración de la sesión ARCore ─────────────────────────────────
+    //Configuración de la sesión ARCore
     private void configurarFrameListener() {
         binding.arSceneView.setOnSessionUpdated((session, frame) -> {
             lastFrame = frame;
@@ -291,7 +291,7 @@ public class EscanearActivity extends AppCompatActivity {
         binding.layoutHintSuperficie.setVisibility(View.VISIBLE);
     }
 
-    // ── Touch listener: colocar modelo (tap) y moverlo (drag) ────────────
+    //Touch listener: colocar modelo (tap) y moverlo (drag)
     private void configurarTouchListener() {
         binding.arSceneView.setOnTouchListener((v, event) -> {
             float x = event.getX();
@@ -334,7 +334,7 @@ public class EscanearActivity extends AppCompatActivity {
         });
     }
 
-    // ── Mover modelo arrastrando ──────────────────────────────────────────
+    //Mover modelo arrastrando
     private void moverModeloA(float x, float y) {
         if (lastFrame == null || modelNodeActual == null) return;
         List<HitResult> hits = lastFrame.hitTest(x, y);
@@ -360,7 +360,7 @@ public class EscanearActivity extends AppCompatActivity {
         }
     }
 
-    // ── Carga inicial: productos + modelo TFLite ──────────────────────────
+    //Carga inicial: productos + modelo TFLite
     private void iniciarCargaEmbeddings() {
         binding.layoutCargando.setVisibility(View.VISIBLE);
         binding.tvCargandoTexto.setText("Cargando modelo de detección...");
@@ -401,7 +401,7 @@ public class EscanearActivity extends AppCompatActivity {
         });
     }
 
-    // ── Transición de modo ────────────────────────────────────────────────
+    //Transición de modo
     private void activarModoEscaneando() {
         modoActual = Modo.ESCANEANDO;
         binding.layoutCargando.setVisibility(View.GONE);
@@ -433,7 +433,7 @@ public class EscanearActivity extends AppCompatActivity {
         }
     }
 
-    // ── hitTest + colocación de modelo ────────────────────────────────────
+    //hitTest + colocación de modelo
     private void procesarToque(float x, float y) {
         List<HitResult> hits = lastFrame.hitTest(x, y);
         for (HitResult hit : hits) {
@@ -478,7 +478,7 @@ public class EscanearActivity extends AppCompatActivity {
         }
     }
 
-    // ── Carga del modelo 3D ───────────────────────────────────────────────
+    //Carga del modelo 3D
     private void cargarProductoDesdeFirebase(String productoId) {
         repositorio.obtenerProductoId(productoId, new ProductoContrato.LeerIdCallback() {
             @Override
@@ -513,7 +513,7 @@ public class EscanearActivity extends AppCompatActivity {
         );
     }
 
-    // ── UI del panel inferior ─────────────────────────────────────────────
+    //UI del panel inferior
     private void mostrarInfoProducto(Producto p) {
         etiquetaYaAnimada = false;
         mostrarEtiqueta(p);
@@ -621,7 +621,7 @@ public class EscanearActivity extends AppCompatActivity {
         });
     }
 
-    // ── Indicador off-screen ──────────────────────────────────────────────
+    //Indicador off-scree
     private void actualizarIndicadorOffscreen(float ndcX, float ndcY) {
         int W = binding.arSceneView.getWidth();
         int H = binding.arSceneView.getHeight();
@@ -695,7 +695,7 @@ public class EscanearActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────
+    //Lifecycle
     @Override
     protected void onDestroy() {
         super.onDestroy();

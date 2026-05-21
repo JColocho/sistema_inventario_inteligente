@@ -14,11 +14,11 @@ import java.util.List;
 public class EmbeddingHelper {
     private static final String TAG = "EmbeddingHelper";
     private static final String MODELO = "mobilenet_v3_embedder.tflite";
-    /** MobileNetV3 224: lado de la imagen de entrada del modelo. */
+    //MobileNetV3 224: lado de la imagen de entrada del modelo.
     private static final int INPUT_SIZE = 224;
 
     private final CompiledModel model;
-    /** Buffers de E/S reservados una sola vez y reutilizados en cada inferencia. */
+    //Buffers de E/S reservados una sola vez y reutilizados en cada inferencia.
     private final List<TensorBuffer> inputBuffers;
     private final List<TensorBuffer> outputBuffers;
 
@@ -32,9 +32,9 @@ public class EmbeddingHelper {
         Log.i(TAG, "Modelo LiteRT cargado (CompiledModel · acelerador CPU)");
     }
 
-    /**
-     * Recorte cuadrado central -> escalado -> inferencia -> L2-normalización.
-     * SIEMPRE debe llamarse en un hilo de fondo (la inferencia tarda ~50-150 ms).
+    /*
+     Recorte cuadrado central -> escalado -> inferencia -> L2-normalización.
+     SIEMPRE debe llamarse en un hilo de fondo (la inferencia tarda ~50-150 ms).
      */
     public synchronized float[] extraer(Bitmap bmp) {
         Bitmap cuadrado = recortarCuadradoCentral(bmp);
@@ -66,9 +66,9 @@ public class EmbeddingHelper {
         }
     }
 
-    /**
-     * Recorta el mayor cuadrado centrado. Evita que un fotograma apaisado y una
-     * foto vertical se deformen de forma distinta al escalar, y reduce el fondo.
+    /*
+      Recorta el mayor cuadrado centrado. Evita que un fotograma apaisado y una
+      foto vertical se deformen de forma distinta al escalar, y reduce el fondo.
      */
     private Bitmap recortarCuadradoCentral(Bitmap src) {
         int w = src.getWidth(), h = src.getHeight();
@@ -87,8 +87,7 @@ public class EmbeddingHelper {
         for (int i = 0; i < v.length; i++) out[i] = (float) (v[i] / norma);
         return out;
     }
-
-    /** Coseno entre dos vectores ya L2-normalizados = producto punto. Rango [-1,1]. */
+    //Coseno entre dos vectores ya L2-normalizados = producto punto. Rango [-1,1].
     public static double similitudCoseno(float[] a, float[] b) {
         int len = Math.min(a.length, b.length);
         double dot = 0;
@@ -96,7 +95,7 @@ public class EmbeddingHelper {
         return dot;
     }
 
-    /** Libera el modelo y los buffers nativos. Llamar en onDestroy/onDestroyView. */
+    //Libera el modelo y los buffers nativos. Llamar en onDestroy/onDestroyView.
     public void close() {
         for (TensorBuffer b : inputBuffers) b.close();
         for (TensorBuffer b : outputBuffers) b.close();

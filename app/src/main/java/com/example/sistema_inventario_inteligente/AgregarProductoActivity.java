@@ -116,20 +116,20 @@ public class AgregarProductoActivity extends AppCompatActivity {
             return insets;
         });
 
-        imgProducto            = findViewById(R.id.imgProductoRef);
+        imgProducto = findViewById(R.id.imgProductoRef);
         layoutModeloSeleccionado = findViewById(R.id.layoutModeloSeleccionado);
-        txtNombreModelo        = findViewById(R.id.txtNombreModelo);
-        txtNombre              = findViewById(R.id.txtNombreProductoAdd);
-        txtDescripcion         = findViewById(R.id.txtDescripcionAdd);
-        txtPrecio              = findViewById(R.id.txtPrecioAdd);
-        txtCantidad            = findViewById(R.id.txtCantidadAdd);
-        spCategoria            = findViewById(R.id.spCategoriaAdd);
-        btnAtras               = findViewById(R.id.btnAddBack);
-        btnGuardarCamara       = findViewById(R.id.btnCamaraAddProducto);
-        btnSeleccionarModelo   = findViewById(R.id.btnSeleccionarModelo);
-        btnQuitarModelo        = findViewById(R.id.btnQuitarModelo);
-        btnGuardarProducto     = findViewById(R.id.btnGuardarProducto);
-        spSucursalAdd          = findViewById(R.id.spSucursalAdd);
+        txtNombreModelo = findViewById(R.id.txtNombreModelo);
+        txtNombre = findViewById(R.id.txtNombreProductoAdd);
+        txtDescripcion = findViewById(R.id.txtDescripcionAdd);
+        txtPrecio = findViewById(R.id.txtPrecioAdd);
+        txtCantidad = findViewById(R.id.txtCantidadAdd);
+        spCategoria = findViewById(R.id.spCategoriaAdd);
+        btnAtras = findViewById(R.id.btnAddBack);
+        btnGuardarCamara = findViewById(R.id.btnCamaraAddProducto);
+        btnSeleccionarModelo = findViewById(R.id.btnSeleccionarModelo);
+        btnQuitarModelo = findViewById(R.id.btnQuitarModelo);
+        btnGuardarProducto = findViewById(R.id.btnGuardarProducto);
+        spSucursalAdd = findViewById(R.id.spSucursalAdd);
 
         ArrayAdapter<String> adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, CATEGORIAS);
         adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);

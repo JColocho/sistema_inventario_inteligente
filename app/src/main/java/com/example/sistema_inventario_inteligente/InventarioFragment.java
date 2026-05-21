@@ -1,13 +1,16 @@
 package com.example.sistema_inventario_inteligente;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,11 @@ import com.example.sistema_inventario_inteligente.adapters.ProductoAdapter;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
+import com.example.sistema_inventario_inteligente.models.Sucursal;
+import com.example.sistema_inventario_inteligente.models.SucursalContrato;
+import com.example.sistema_inventario_inteligente.models.SucursalRepository;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -28,23 +36,28 @@ import java.util.Collections;
 import java.util.List;
 
 public class InventarioFragment extends Fragment {
+
     private RecyclerView rvProducto;
     private Button btnAgregar;
     private TextInputEditText etBuscar;
     private ChipGroup chipGroupCategorias;
-    private Chip chipTodo, chipComputadora, chipCelular, chipPeriferico, chipOtros, chipAudio, chipTelevisor, chipTableta;
+    private Chip chipTodo, chipComputadora, chipCelular, chipPeriferico,
+            chipOtros, chipAudio, chipTelevisor, chipTableta;
     private TextView tvContadorProductos;
 
-    // Datos
-    private ProductoAdapter productoAdapater;
+    private ProductoAdapter productoAdapter;
     private final ArrayList<Producto> listaProductos = new ArrayList<>();
+    private final ArrayList<Producto> listaFiltrada  = new ArrayList<>();
 
-    // Lista filtrada de productos por categoria
-    private final ArrayList<Producto> listaFiltrada = new ArrayList<>();
+    private Spinner spSucursalInventario;
+    private SucursalRepository sucursalRepository;
+    private FusedLocationProviderClient fusedLocationClient;
+    private final ArrayList<Sucursal> listaSucursales = new ArrayList<>();
+    private String sucursalSeleccionadaId = null;   // null = "Todas las sucursales"
 
     private ProductoContrato repositorio;
     private String categoriaActiva = "";
-    private String textoBusqueda = "";
+    private String textoBusqueda   = "";
 
     public InventarioFragment() {}
 
@@ -69,26 +82,32 @@ public class InventarioFragment extends Fragment {
         rvProducto = view.findViewById(R.id.rvProductos);
         btnAgregar = view.findViewById(R.id.btnAgregar);
         etBuscar = view.findViewById(R.id.etBuscar);
-        chipGroupCategorias = view.findViewById(R.id.chipGroupCategorias);
-        tvContadorProductos = view.findViewById(R.id.tvContadorProductos);
+        chipGroupCategorias  = view.findViewById(R.id.chipGroupCategorias);
+        tvContadorProductos  = view.findViewById(R.id.tvContadorProductos);
 
         chipTodo = view.findViewById(R.id.chipTodos);
         chipComputadora = view.findViewById(R.id.chipComputadoras);
         chipTableta = view.findViewById(R.id.chipTablets);
         chipCelular = view.findViewById(R.id.chipCelulares);
-        chipPeriferico = view.findViewById(R.id.chipPerifericos);
+        chipPeriferico  = view.findViewById(R.id.chipPerifericos);
         chipOtros = view.findViewById(R.id.chipOtros);
         chipAudio = view.findViewById(R.id.chipAudio);
         chipTelevisor = view.findViewById(R.id.chipTelevisores);
 
-        productoAdapater = new ProductoAdapter(listaFiltrada);
+        productoAdapter = new ProductoAdapter(listaFiltrada);
         rvProducto.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvProducto.setAdapter(productoAdapater);
+        rvProducto.setAdapter(productoAdapter);
 
+        spSucursalInventario = view.findViewById(R.id.spSucursalInventario);
+        sucursalRepository = new SucursalRepository();
+        fusedLocationClient  = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        configurarSpinnerSucursales();
+
+        // Filtro por texto de búsqueda
         etBuscar.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textoBusqueda = s.toString().trim();
@@ -96,15 +115,12 @@ public class InventarioFragment extends Fragment {
             }
         });
 
-        //Filtros por categoria
+        // Filtros por categoría
         chipGroupCategorias.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            //Validando que este seleccionado un chip
             if (checkedIds.isEmpty()) return;
-
             int chipId = checkedIds.get(0);
 
-            //Identificamos la categoría seleccionada
-            if      (chipId == chipTodo.getId()){
+            if (chipId == chipTodo.getId()){
                 categoriaActiva = "";
             }
             else if (chipId == chipComputadora.getId()){
@@ -113,10 +129,10 @@ public class InventarioFragment extends Fragment {
             else if (chipId == chipCelular.getId()){
                 categoriaActiva = "Smartphones";
             }
-            else if (chipId == chipTableta.getId()) {
+            else if (chipId == chipTableta.getId()){
                 categoriaActiva = "Tablets";
             }
-            else if (chipId == chipAudio.getId()) {
+            else if (chipId == chipAudio.getId()){
                 categoriaActiva = "Audio";
             }
             else if (chipId == chipTelevisor.getId()){
@@ -128,72 +144,158 @@ public class InventarioFragment extends Fragment {
             else if (chipId == chipOtros.getId()){
                 categoriaActiva = "Otro";
             }
+
             aplicarFiltros();
         });
 
         btnAgregar.setOnClickListener(v ->
                 startActivity(new Intent(getContext(), AgregarProductoActivity.class)));
-        cargarProductos();
 
+        cargarProductos();
         return view;
     }
-
-    //Metodo para filtrado de productos por categoria y nombre
     private void aplicarFiltros() {
         listaFiltrada.clear();
+        String busqueda = etBuscar.getText() != null
+                ? etBuscar.getText().toString().trim().toLowerCase()
+                : "";
 
-        for (Producto itemProducto : listaProductos) {
+        for (Producto p : listaProductos) {
 
-            //Filtro para categoria
+            //Filtro sucursal
+            boolean pasaSucursal = sucursalSeleccionadaId == null
+                    || (p.getIdSucursal() != null
+                    && p.getIdSucursal().equals(sucursalSeleccionadaId));
+
+            //Filtro categoría
             boolean pasaCategoria = categoriaActiva.isEmpty()
-                    || (itemProducto.getCategoria() != null
-                    && itemProducto.getCategoria().equalsIgnoreCase(categoriaActiva));
+                    || (p.getCategoria() != null
+                    && p.getCategoria().equals(categoriaActiva));
 
-            //Filtro para busqueda por nombre
-            boolean pasaBusqueda = textoBusqueda.isEmpty()
-                    || (itemProducto.getNombre() != null
-                    && itemProducto.getNombre().toLowerCase().contains(textoBusqueda.toLowerCase()));
+            //Filtro búsqueda
+            boolean pasaBusqueda = busqueda.isEmpty()
+                    || (p.getNombre() != null
+                    && p.getNombre().toLowerCase().contains(busqueda));
 
-            if (pasaCategoria && pasaBusqueda) {
-                listaFiltrada.add(itemProducto);
+            if (pasaSucursal && pasaCategoria && pasaBusqueda) {
+                listaFiltrada.add(p);
             }
         }
 
-        productoAdapater.notifyDataSetChanged();
+        productoAdapter.notifyDataSetChanged();
         actualizarContador();
     }
 
-    //Metodo para actualizar contador de productos
     private void actualizarContador() {
         tvContadorProductos.setText(listaFiltrada.size() + " productos");
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         repositorio.detenerEscucha();
     }
 
-    //Metodo para cargar todos los productos desde Firebase
     private void cargarProductos() {
-        //Cargando los productos en tiempo real
         repositorio.obtenerProductosEnTiempoReal("", new ProductoContrato.LeerCallback() {
             @Override
             public void onProductosCargados(List<Producto> productos) {
-                //Limpiar lista
                 listaProductos.clear();
-                //Cargar lista con los productos actualizados
                 listaProductos.addAll(productos);
-
                 Collections.reverse(listaProductos);
-                //Aplicar filtros
                 aplicarFiltros();
             }
 
             @Override
             public void onError(String error) {
-                if (getContext() != null) {
+                if (getContext() != null)
                     Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void configurarSpinnerSucursales() {
+        sucursalRepository.obtenerTodas(new SucursalContrato.LeerCallback() {
+            @Override
+            public void onSucursalesCargadas(List<Sucursal> sucursales) {
+                if (getContext() == null) return;
+
+                listaSucursales.clear();
+                //Usando un objeto Sucursal con id null para distinguirla.
+                Sucursal opcionTodas = new Sucursal();
+                opcionTodas.setIdSucursal(null);
+                opcionTodas.setNombre("Todas las sucursales");
+                listaSucursales.add(opcionTodas);
+                listaSucursales.addAll(sucursales);
+
+                ArrayAdapter<Sucursal> adapter = new ArrayAdapter<>(
+                        getContext(), R.layout.spinner_item, listaSucursales);
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown);
+                spSucursalInventario.setAdapter(adapter);
+
+                spSucursalInventario.setOnItemSelectedListener(
+                        new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view,
+                                                       int position, long id) {
+                                Sucursal seleccionada = (Sucursal) spSucursalInventario.getSelectedItem();
+                                //null id = "Todas las sucursales"
+                                sucursalSeleccionadaId = seleccionada.getIdSucursal();
+                                aplicarFiltros();
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {}
+                        });
+
+                //Después de cargar el Spinner, pre-seleccionar la sucursal más cercana
+                obtenerUbicacionSeleccionarCercana();
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getContext() != null)
+                    Toast.makeText(getContext(),
+                            "Error al cargar sucursales: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void obtenerUbicacionSeleccionarCercana() {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(
+                requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            return;  //Sin permiso: el Spinner queda en "Todas las sucursales"
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location == null || listaSucursales.size() <= 1) return;
+
+            Sucursal sucursalMasCercana = null;
+            float distanciaMinima = Float.MAX_VALUE;
+            float[] resultado = new float[1];
+
+            //Empezar en índice 1 para saltar "Todas las sucursales"
+            for (int i = 1; i < listaSucursales.size(); i++) {
+                Sucursal s = listaSucursales.get(i);
+                android.location.Location.distanceBetween(
+                        location.getLatitude(), location.getLongitude(),
+                        s.getLatitud(), s.getLongitud(), resultado);
+
+                if (resultado[0] < distanciaMinima) {
+                    distanciaMinima = resultado[0];
+                    sucursalMasCercana = s;
                 }
+            }
+
+            if (sucursalMasCercana == null) return;
+
+            //Buscando el objeto Sucursal directamente.
+            int posicion = listaSucursales.indexOf(sucursalMasCercana);
+            if (posicion >= 0) {
+                spSucursalInventario.setSelection(posicion);
+                // onItemSelectedListener se dispara automáticamente y llama a aplicarFiltros()
             }
         });
     }
