@@ -34,6 +34,7 @@ import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
+import com.example.sistema_inventario_inteligente.models.Sucursal;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,8 +57,10 @@ public class AgregarProductoActivity extends AppCompatActivity {
     private String urlImagenProducto = "";
     private String urlModelo3D = "";
     public ArrayList<Categoria> listaCategorias;
+    public ArrayList<Sucursal> listaSucursales;
     public ArrayAdapter<Categoria> adapterCategoria;
-    public Spinner spTiendas, spCategoria;
+    public ArrayAdapter<Sucursal> adapterSucursal;
+    public Spinner spSucursales, spCategoria;
     private ProductoContrato repositorio = new ProductoRepository();
     public LinearLayout layoutModeloSeleccionado;
     public TextView txtNombreModelo;
@@ -117,6 +120,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
         txtCantidad = findViewById(R.id.txtCantidadAdd);
 
         spCategoria = findViewById(R.id.spCategoriaAdd);
+        spSucursales = findViewById(R.id.spSucursalAdd);
 
 
         btnAtras = findViewById(R.id.btnAddBack);
@@ -125,6 +129,14 @@ public class AgregarProductoActivity extends AppCompatActivity {
         btnQuitarModelo = findViewById(R.id.btnQuitarModelo);
         btnGuardarGaleria = findViewById(R.id.btnGaleriaAddProducto);
         btnGuardarProducto = findViewById(R.id.btnGuardarProducto);
+
+        listaSucursales = new ArrayList<>();
+        adapterSucursal = new ArrayAdapter<>(this, R.layout.spinner_item, listaSucursales);
+        adapterSucursal.setDropDownViewResource(R.layout.spinner_dropdown);
+
+        cargarSucursales();
+
+        spSucursales.setAdapter(adapterSucursal);
 
         listaCategorias = new ArrayList<>();
         adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, listaCategorias);
@@ -196,8 +208,9 @@ public class AgregarProductoActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Categoria categoria = dataSnapshot.getValue(Categoria.class);
                     listaCategorias.add(categoria);
-                    adapterCategoria.notifyDataSetChanged();
                 }
+
+                adapterCategoria.notifyDataSetChanged();
             }
 
             @Override
@@ -206,6 +219,28 @@ public class AgregarProductoActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void cargarSucursales(){
+        DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
+
+        sucursalRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaSucursales.clear();
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    Sucursal sucursal = dataSnapshot.getValue(Sucursal.class);
+                    listaSucursales.add(sucursal);
+                }
+
+                adapterSucursal.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void abrirGaleria(){
@@ -317,13 +352,14 @@ public class AgregarProductoActivity extends AppCompatActivity {
                         descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
                         categoria = spCategoria.getSelectedItem().toString();
 
+                Sucursal sucursal = (Sucursal) spSucursales.getSelectedItem();
+
                 double precio = Double.parseDouble(txtPrecio.getText().toString()),
                         cantidad = Double.parseDouble(txtCantidad.getText().toString());
 
                 //Validando que se haya seleccionado una imagen de referencia
                 //del producto
                 if (uriFotoSeleccionada != null){
-
 
                     //Subiendo la imagen al storage
                     repositorio.subirImagenStorage(uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
@@ -344,7 +380,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
                                         //Capturamos todos lo datos del producto en el objeto
                                         Producto producto = new Producto(urlImagenProducto, urlModelo3D,nombre, categoria, descripcion,
-                                                precio, cantidad);
+                                                precio, cantidad, sucursal.getIdSucursal());
 
                                         //Hacemos la inserción en el repositorio
                                         repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {

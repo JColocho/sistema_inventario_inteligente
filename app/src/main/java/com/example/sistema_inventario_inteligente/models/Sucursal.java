@@ -31,4 +31,9 @@ public class Sucursal {
 
     public int getTotalProductos() { return totalProductos; }
     public void setTotalProductos(int totalProductos) { this.totalProductos = totalProductos; }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }
