@@ -121,7 +121,13 @@ public class EditarProductoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_editar_producto);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    Math.max(systemBars.bottom, imeInsets.bottom)
+            );
             return insets;
         });
 
@@ -134,14 +140,14 @@ public class EditarProductoActivity extends AppCompatActivity {
         }
 
 
-        imgProducto            = findViewById(R.id.imgProductoEditar);
+        imgProducto            = findViewById(R.id.imgProductoEdit);
         layoutModeloSeleccionado = findViewById(R.id.layoutModeloSeleccionado);
         txtNombreModelo        = findViewById(R.id.txtNombreModelo);
-        txtNombre              = findViewById(R.id.txtNombreProductoEditar);
-        txtDescripcion         = findViewById(R.id.txtDescripcionEditar);
-        txtPrecio              = findViewById(R.id.txtPrecioEditar);
-        txtCantidad            = findViewById(R.id.txtCantidadEditar);
-        spCategoria            = findViewById(R.id.spCategoriaEditar);
+        txtNombre              = findViewById(R.id.txtNombreProductoEdit);
+        txtDescripcion         = findViewById(R.id.txtDescripcionEdit);
+        txtPrecio              = findViewById(R.id.txtPrecioEdit);
+        txtCantidad            = findViewById(R.id.txtCantidadEdit);
+        spCategoria            = findViewById(R.id.spCategoriaEdit);
         btnAtras               = findViewById(R.id.btnEditarBack);
         btnGuardarCamara       = findViewById(R.id.btnCamaraEditarProducto);
         btnGuardarGaleria      = findViewById(R.id.btnGaleriaEditarProducto);
@@ -181,6 +187,7 @@ public class EditarProductoActivity extends AppCompatActivity {
 
         btnActualizarProducto.setOnClickListener(v -> actualizarProducto());
     }
+
     private void cargarDatosProducto() {
         repositorio.obtenerProductoId(idProducto, new ProductoContrato.LeerIdCallback() {
             @Override
@@ -351,6 +358,7 @@ public class EditarProductoActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(String error) {
+                                btnActualizarProducto.setEnabled(true);
                                 Toast.makeText(EditarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
                             }
                         }
