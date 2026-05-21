@@ -59,7 +59,7 @@ public class EditarProductoActivity extends AppCompatActivity {
     private static final String TAG = "EditarProducto";
 
     private static final String[] CATEGORIAS = {
-            "Computadoras", "Smartphones", "Tablets", "Televisores", "Audio", "Otro"
+            "Computadoras", "Smartphones", "Tablets", "Televisores", "Audio", "Perifericos", "Otro"
     };
 
     // Views

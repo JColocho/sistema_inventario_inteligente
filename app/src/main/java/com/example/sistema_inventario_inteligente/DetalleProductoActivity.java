@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,13 +18,19 @@ import com.example.sistema_inventario_inteligente.glide.GlideApp;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
+import com.example.sistema_inventario_inteligente.models.Sucursal;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class DetalleProductoActivity extends AppCompatActivity {
     private String idProducto = "", urlImagenRef = "", urlModelo3D;
-    public TextView txtNombre, txtDescripcion, txtCategoria, txtPrecio, txtCantidad;
+    public TextView txtNombre, txtDescripcion, txtSucursal, txtCategoria, txtPrecio, txtCantidad;
     public ImageView imgProducto, btnCerrar, btnEliminar, btnEditar;
     private ProductoContrato productoRepositorio;
 
@@ -43,6 +50,7 @@ public class DetalleProductoActivity extends AppCompatActivity {
         imgProducto = findViewById(R.id.imgProductoDetalle);
         txtNombre = findViewById(R.id.txtNombreDetalle);
         txtDescripcion = findViewById(R.id.txtDescripcioDetalle);
+        txtSucursal = findViewById(R.id.txtSucursalDetalle);
         txtCategoria = findViewById(R.id.txtCategoriaDetalle);
         txtPrecio = findViewById(R.id.txtPrecioDetalle);
         txtCantidad = findViewById(R.id.txtCantidadDetalle);
@@ -102,6 +110,19 @@ public class DetalleProductoActivity extends AppCompatActivity {
 
                 urlImagenRef = producto.getUrlImagenProducto();
                 urlModelo3D  = producto.getUrlModelo3D();
+
+                DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
+                sucursalRef.child(producto.getIdSucursal()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        txtSucursal.setText(snapshot.getValue(Sucursal.class).getNombre());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
 
                 txtNombre.setText(producto.getNombre());
                 txtDescripcion.setText(producto.getDescripcion());

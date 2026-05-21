@@ -53,7 +53,7 @@ import java.util.concurrent.Executors;
 public class AgregarProductoActivity extends AppCompatActivity {
 
     private static final String[] CATEGORIAS = {
-            "Computadoras", "Smartphones", "Tablets", "Televisores", "Audio", "Otro"
+            "Computadoras", "Smartphones", "Tablets", "Televisores", "Audio", "Perifericos", "Otro"
     };
 
     public ImageView btnAtras, imgProducto, btnQuitarModelo;

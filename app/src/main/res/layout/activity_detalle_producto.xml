@@ -136,7 +136,26 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="24dp"
-                    android:text="Descripción detallada aquí..."
+                    android:text="descripcion"
+                    android:textColor="#E2E8F0"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="4dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sucursal"
+                    android:textColor="@color/nav_inactive"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1" />
+
+                <TextView
+                    android:id="@+id/txtSucursalDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="sucursal"
                     android:textColor="#E2E8F0"
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp" />
