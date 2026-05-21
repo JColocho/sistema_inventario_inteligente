@@ -24,6 +24,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class InventarioFragment extends Fragment {
@@ -183,6 +184,7 @@ public class InventarioFragment extends Fragment {
                 //Cargar lista con los productos actualizados
                 listaProductos.addAll(productos);
 
+                Collections.reverse(listaProductos);
                 //Aplicar filtros
                 aplicarFiltros();
             }

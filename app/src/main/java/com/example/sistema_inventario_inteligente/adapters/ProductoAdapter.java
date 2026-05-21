@@ -23,10 +23,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.ProductoVH> {
 
-    public ArrayList<Producto> dataProductos = new ArrayList<>();
+    public ArrayList<Producto> dataProductos;
 
     public ProductoAdapter(ArrayList<Producto> productos) {
         this.dataProductos = productos;

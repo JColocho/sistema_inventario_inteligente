@@ -31,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class InicioFragment extends Fragment {
@@ -152,6 +153,8 @@ public class InicioFragment extends Fragment {
                 listaRecientes.clear();
                 int inicio = Math.max(0, productos.size() - 3);
                 listaRecientes.addAll(productos.subList(inicio, productos.size()));
+
+                Collections.reverse(listaRecientes);
                 if (listaRecientes.isEmpty()) {
                     rvRecientes.setVisibility(View.GONE);
                     layoutVacioRecientes.setVisibility(View.VISIBLE);
