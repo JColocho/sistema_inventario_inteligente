@@ -69,7 +69,6 @@ public class ProductoRepository implements ProductoContrato{
                 eliminarModelo3DStorage(urlModelo3D, new OperacionCallback() {
                     @Override
                     public void onExito(String mensaje) {
-                        //Hacemos referencia al nodo "Productos" alojado en Firebase
                         DatabaseReference productoEliminar = FirebaseDatabase.getInstance().getReference("Productos");
                         //Referenciamos mediante el ID el producto a eliminar.
                         productoEliminar.child(idProducto).removeValue()
@@ -123,6 +122,15 @@ public class ProductoRepository implements ProductoContrato{
         else {
             //Conectamos el escuchador a Firebase y filtramos los datos según categoria
             productosRef.orderByChild("categoria").equalTo(categoria).addValueEventListener(listenerTiempoReal);
+        }
+    }
+
+    @Override
+    public void detenerEscucha() {
+        if (listenerTiempoReal != null) {
+            FirebaseDatabase.getInstance().getReference("Productos")
+                    .removeEventListener(listenerTiempoReal);
+            listenerTiempoReal = null;
         }
     }
 

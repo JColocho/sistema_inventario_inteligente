@@ -107,25 +107,25 @@ public class InventarioFragment extends Fragment {
                 categoriaActiva = "";
             }
             else if (chipId == chipComputadora.getId()){
-                categoriaActiva = "COMPUTADORA";
+                categoriaActiva = "Computadoras";
             }
             else if (chipId == chipCelular.getId()){
-                categoriaActiva = "CELULAR";
+                categoriaActiva = "Smartphones";
             }
             else if (chipId == chipTableta.getId()) {
-                categoriaActiva = "TABLETA";
+                categoriaActiva = "Tablets";
             }
             else if (chipId == chipAudio.getId()) {
-                categoriaActiva = "AUDIO";
+                categoriaActiva = "Audio";
             }
             else if (chipId == chipTelevisor.getId()){
-                categoriaActiva = "TELEVISOR";
+                categoriaActiva = "Televisores";
             }
             else if (chipId == chipPeriferico.getId()){
-                categoriaActiva = "PERIFERICO";
+                categoriaActiva = "Perifericos";
             }
             else if (chipId == chipOtros.getId()){
-                categoriaActiva = "OTROS";
+                categoriaActiva = "Otro";
             }
             aplicarFiltros();
         });
@@ -164,9 +164,14 @@ public class InventarioFragment extends Fragment {
 
     //Metodo para actualizar contador de productos
     private void actualizarContador() {
-        int numeroProductos = listaProductos.size();
-        tvContadorProductos.setText(numeroProductos + " productos");
+        tvContadorProductos.setText(listaFiltrada.size() + " productos");
     }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        repositorio.detenerEscucha();
+    }
+
     //Metodo para cargar todos los productos desde Firebase
     private void cargarProductos() {
         //Cargando los productos en tiempo real

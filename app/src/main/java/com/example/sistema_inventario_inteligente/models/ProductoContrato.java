@@ -12,6 +12,7 @@ public interface ProductoContrato {
     void eliminarProducto(String idProducto, String urlImagen, String urlModelo3D, OperacionCallback callback);
     void obtenerProductoId(String idProducto, LeerIdCallback callback);
     void obtenerProductosEnTiempoReal(String categoria, LeerCallback callback);
+    void detenerEscucha();
 
     //Metodos para gestión de imagenes de referencia y modelos 3D en el storage
     void subirImagenStorage(Uri uriImagen, StorageCallBack callBack);
