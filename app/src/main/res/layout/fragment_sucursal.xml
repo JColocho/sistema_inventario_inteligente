@@ -1,14 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SucursalFragment">
+    android:background="@color/bg_secondary">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
-</FrameLayout>
+        <!-- ── HEADER ────────────────────────────────── -->
+        <TextView
+            style="@style/TextEyebrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginEnd="22dp"
+            android:text="Puntos de venta" />
+
+        <TextView
+            style="@style/TextDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="22dp"
+            android:text="Sucursales" />
+
+        <!-- ── GPS CARD ───────────────────────────────── -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="22dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/accent_teal"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    style="@style/TextEyebrow"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="MÁS CERCANA" />
+
+                <TextView
+                    android:id="@+id/tvSucursalCercana"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Detectando..."
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ── MAPA ───────────────────────────────────── -->
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="22dp" />
+
+        <!-- ── LISTA ──────────────────────────────────── -->
+        <TextView
+            style="@style/TextEyebrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="22dp"
+            android:text="TODAS LAS SUCURSALES" />
+
+        <ProgressBar
+            android:id="@+id/progressSucursales"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:indeterminateTint="@color/accent_teal"
+            android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSucursales"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_sucursal" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

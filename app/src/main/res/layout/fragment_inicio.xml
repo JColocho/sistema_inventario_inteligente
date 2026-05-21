@@ -21,7 +21,7 @@
             android:layout_marginStart="22dp"
             android:layout_marginTop="22dp"
             android:layout_marginEnd="22dp"
-            android:text="INVENAR · V1.0" />
+            android:text="Sistema de detección" />
 
         <TextView
             style="@style/TextDisplay"
@@ -30,17 +30,9 @@
             android:layout_marginStart="22dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="22dp"
-            android:text="Inventario," />
+            android:text="Inventario" />
 
-        <TextView
-            style="@style/TextDisplayAccent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
-            android:layout_marginEnd="22dp"
-            android:text="en vivo" />
 
-        <!-- ── UBICACIÓN (placeholder) ───────────────── -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardGps"
             android:layout_width="match_parent"
