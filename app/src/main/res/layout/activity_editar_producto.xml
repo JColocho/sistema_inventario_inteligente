@@ -91,27 +91,15 @@
 
                     <Button
                         android:id="@+id/btnCamaraEditarProducto"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="1"
                         android:background="@drawable/bg_button"
                         android:text="Abrir Camara"
+                        android:textStyle="bold"
                         app:icon="@drawable/camara"
                         app:iconGravity="top"
                         app:iconSize="30dp" />
 
-                    <Button
-                        android:id="@+id/btnGaleriaEditarProducto"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_button"
-                        android:text="Abrir Galeria"
-                        app:icon="@drawable/galeria_imagenes"
-                        app:iconGravity="top"
-                        app:iconSize="30dp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

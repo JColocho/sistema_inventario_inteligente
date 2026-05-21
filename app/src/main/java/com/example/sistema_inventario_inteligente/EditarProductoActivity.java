@@ -64,7 +64,7 @@ public class EditarProductoActivity extends AppCompatActivity {
 
     // Views
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
-    public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo, btnActualizarProducto;
+    public Button btnGuardarCamara, btnSeleccionarModelo, btnActualizarProducto;
     public EditText txtNombre, txtDescripcion, txtPrecio, txtCantidad;
     public Spinner spCategoria, spSucursalEdit;
     public LinearLayout layoutModeloSeleccionado;
@@ -85,14 +85,6 @@ public class EditarProductoActivity extends AppCompatActivity {
     private final SucursalContrato repositorioSucursal = new SucursalRepository();
     private EmbeddingHelper embeddingHelper;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
-            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                if (uri != null) {
-                    uriFotoSeleccionada = uri;
-                    imgProducto.setImageURI(uri);
-                }
-            });
 
     private final ActivityResultLauncher<Uri> seleccionaImagenCamara =
             registerForActivityResult(new ActivityResultContracts.TakePicture(), resultado -> {
@@ -151,7 +143,6 @@ public class EditarProductoActivity extends AppCompatActivity {
         spSucursalEdit           = findViewById(R.id.spSucursalEdit);
         btnAtras                 = findViewById(R.id.btnEditarBack);
         btnGuardarCamara         = findViewById(R.id.btnCamaraEditarProducto);
-        btnGuardarGaleria        = findViewById(R.id.btnGaleriaEditarProducto);
         btnSeleccionarModelo     = findViewById(R.id.btnSeleccionarModelo);
         btnQuitarModelo          = findViewById(R.id.btnQuitarModelo);
         btnActualizarProducto    = findViewById(R.id.btnEditarProducto);
@@ -178,7 +169,6 @@ public class EditarProductoActivity extends AppCompatActivity {
 
     private void configurarListeners() {
         btnAtras.setOnClickListener(v -> finish());
-        btnGuardarGaleria.setOnClickListener(v -> abrirGaleria());
         btnGuardarCamara.setOnClickListener(v -> validarPermisoCamara());
         btnSeleccionarModelo.setOnClickListener(v -> selectorModelo.launch(new String[]{"*/*"}));
         btnQuitarModelo.setOnClickListener(v -> {
@@ -411,13 +401,6 @@ public class EditarProductoActivity extends AppCompatActivity {
             finish();
         }
     }
-
-    private void abrirGaleria() {
-        selecionarImagen.launch(new PickVisualMediaRequest.Builder()
-                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                .build());
-    }
-
     private void validarPermisoCamara() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {

@@ -57,7 +57,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
     };
 
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
-    public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo, btnGuardarProducto;
+    public Button btnGuardarCamara, btnSeleccionarModelo, btnGuardarProducto;
     public EditText txtNombre, txtDescripcion, txtPrecio, txtCantidad;
     public String rutaCamara;
     private Uri uriImageCamara;
@@ -74,14 +74,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
     private EmbeddingHelper embeddingHelper;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
-            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                if (uri != null) {
-                    uriFotoSeleccionada = uri;
-                    imgProducto.setImageURI(uri);
-                }
-            });
 
     private final ActivityResultLauncher<Uri> seleccionaImagenCamara =
             registerForActivityResult(new ActivityResultContracts.TakePicture(), resultado -> {
@@ -137,7 +129,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
         btnGuardarCamara       = findViewById(R.id.btnCamaraAddProducto);
         btnSeleccionarModelo   = findViewById(R.id.btnSeleccionarModelo);
         btnQuitarModelo        = findViewById(R.id.btnQuitarModelo);
-        btnGuardarGaleria      = findViewById(R.id.btnGaleriaAddProducto);
         btnGuardarProducto     = findViewById(R.id.btnGuardarProducto);
         spSucursalAdd          = findViewById(R.id.spSucursalAdd);
 
@@ -153,7 +144,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
             uriModeloSelccionado = null;
             layoutModeloSeleccionado.setVisibility(View.GONE);
         });
-        btnGuardarGaleria.setOnClickListener(v -> abrirGaleria());
         btnGuardarCamara.setOnClickListener(v -> validarPermisoCamara());
         btnGuardarProducto.setOnClickListener(v -> {
             btnGuardarProducto.setEnabled(false);
@@ -211,12 +201,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
             return false;
         }
         return true;
-    }
-
-    private void abrirGaleria() {
-        selecionarImagen.launch(new PickVisualMediaRequest.Builder()
-                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                .build());
     }
 
     private void abrirCamara() {
