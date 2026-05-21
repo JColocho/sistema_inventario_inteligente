@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class LocationHelper {
+    /*
     private final FusedLocationProviderClient fusedClient;
 
     public LocationHelper(Context context) {
@@ -26,4 +27,6 @@ public class LocationHelper {
                 })
                 .addOnFailureListener(onFailure);
     }
+
+     */
 }

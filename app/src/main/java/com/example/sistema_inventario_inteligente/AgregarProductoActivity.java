@@ -230,6 +230,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
                 listaSucursales.clear();
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Sucursal sucursal = dataSnapshot.getValue(Sucursal.class);
+                    sucursal.setIdSucursal(dataSnapshot.getKey());
                     listaSucursales.add(sucursal);
                 }
 
@@ -353,6 +354,9 @@ public class AgregarProductoActivity extends AppCompatActivity {
                         categoria = spCategoria.getSelectedItem().toString();
 
                 Sucursal sucursal = (Sucursal) spSucursales.getSelectedItem();
+                Log.i("Sucursal", sucursal.getIdSucursal());
+
+
 
                 double precio = Double.parseDouble(txtPrecio.getText().toString()),
                         cantidad = Double.parseDouble(txtCantidad.getText().toString());

@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,13 +29,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.sistema_inventario_inteligente.glide.GlideApp;
 import com.example.sistema_inventario_inteligente.models.Categoria;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
+import com.example.sistema_inventario_inteligente.models.Sucursal;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,21 +54,23 @@ public class EditarProductoActivity extends AppCompatActivity {
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
     public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo, btnActualizarProducto;
     public EditText txtNombre, txtDescripcion, txtPrecio, txtCantidad;
-    public Spinner spCategoria;
+    public Spinner spCategoria, spSucursal;
     public LinearLayout layoutModeloSeleccionado;
     public TextView txtNombreModelo;
 
     // Estado interno
     private String idProducto = "";
-    private Producto productoActual, productoNuevo = null;         // producto cargado desde Firebase
+    private Producto productoActual, productoNuevo = null;
     private Uri uriImageCamara;
-    private Uri uriModeloSeleccionado = null;        // null = no se cambió el modelo
-    private Uri uriFotoSeleccionada = null;          // null = no se cambió la imagen
+    private Uri uriModeloSeleccionado = null;
+    private Uri uriFotoSeleccionada = null;
     private String rutaCamara;
 
     // Categorías
     public ArrayList<Categoria> listaCategorias;
+    public ArrayList<Sucursal> listaSucursales;
     public ArrayAdapter<Categoria> adapterCategoria;
+    public ArrayAdapter<Sucursal> adapterSucursal;
 
     // Repositorio
     private final ProductoContrato repositorio = new ProductoRepository();
@@ -140,38 +141,39 @@ public class EditarProductoActivity extends AppCompatActivity {
         }
 
 
-        imgProducto            = findViewById(R.id.imgProductoEdit);
+        imgProducto = findViewById(R.id.imgProductoEdit);
         layoutModeloSeleccionado = findViewById(R.id.layoutModeloSeleccionado);
-        txtNombreModelo        = findViewById(R.id.txtNombreModelo);
-        txtNombre              = findViewById(R.id.txtNombreProductoEdit);
-        txtDescripcion         = findViewById(R.id.txtDescripcionEdit);
-        txtPrecio              = findViewById(R.id.txtPrecioEdit);
-        txtCantidad            = findViewById(R.id.txtCantidadEdit);
-        spCategoria            = findViewById(R.id.spCategoriaEdit);
-        btnAtras               = findViewById(R.id.btnEditarBack);
-        btnGuardarCamara       = findViewById(R.id.btnCamaraEditarProducto);
-        btnGuardarGaleria      = findViewById(R.id.btnGaleriaEditarProducto);
-        btnSeleccionarModelo   = findViewById(R.id.btnSeleccionarModelo);
-        btnQuitarModelo        = findViewById(R.id.btnQuitarModelo);
-        btnActualizarProducto  = findViewById(R.id.btnEditarProducto);
-
-        configurarSpinnerCategorias();
-        configurarListeners();
+        txtNombreModelo = findViewById(R.id.txtNombreModelo);
+        txtNombre = findViewById(R.id.txtNombreProductoEdit);
+        txtDescripcion = findViewById(R.id.txtDescripcionEdit);
+        txtPrecio = findViewById(R.id.txtPrecioEdit);
+        txtCantidad = findViewById(R.id.txtCantidadEdit);
+        spCategoria = findViewById(R.id.spCategoriaEdit);
+        spSucursal = findViewById(R.id.spSucursalEdit);
+        btnAtras = findViewById(R.id.btnEditarBack);
+        btnGuardarCamara = findViewById(R.id.btnCamaraEditarProducto);
+        btnGuardarGaleria = findViewById(R.id.btnGaleriaEditarProducto);
+        btnSeleccionarModelo = findViewById(R.id.btnSeleccionarModelo);
+        btnQuitarModelo = findViewById(R.id.btnQuitarModelo);
+        btnActualizarProducto = findViewById(R.id.btnEditarProducto);
 
         // Cargar datos del producto en los campos
         cargarDatosProducto();
-    }
 
-
-    private void configurarSpinnerCategorias() {
         listaCategorias  = new ArrayList<>();
         adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, listaCategorias);
         adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);
         spCategoria.setAdapter(adapterCategoria);
         cargarCategorias();
-    }
 
-    private void configurarListeners() {
+        listaSucursales  = new ArrayList<>();
+        adapterSucursal = new ArrayAdapter<>(this, R.layout.spinner_item, listaSucursales);
+        adapterSucursal.setDropDownViewResource(R.layout.spinner_dropdown);
+        spSucursal.setAdapter(adapterSucursal);
+        cargarSucursales();
+
+
+
         btnAtras.setOnClickListener(v -> finish());
 
         btnGuardarGaleria.setOnClickListener(v -> abrirGaleria());
@@ -185,7 +187,10 @@ public class EditarProductoActivity extends AppCompatActivity {
             layoutModeloSeleccionado.setVisibility(View.GONE);
         });
 
-        btnActualizarProducto.setOnClickListener(v -> actualizarProducto());
+        btnActualizarProducto.setOnClickListener(v -> {
+            btnActualizarProducto.setEnabled(false);
+            actualizarProducto();
+        });
     }
 
     private void cargarDatosProducto() {
@@ -226,7 +231,8 @@ public class EditarProductoActivity extends AppCompatActivity {
                 }
 
                 // Seleccionar la categoría en el spinner (puede que aún no hayan cargado)
-                seleccionarCategoriaEnSpinner(producto.getCategoria());
+                seleccionarCategoria(producto.getCategoria());
+                seleccionarSucursal(producto.getIdSucursal());
             }
 
             @Override
@@ -252,7 +258,7 @@ public class EditarProductoActivity extends AppCompatActivity {
 
                 // Una vez cargadas, intentar seleccionar la categoría del producto
                 if (productoActual != null) {
-                    seleccionarCategoriaEnSpinner(productoActual.getCategoria());
+                    seleccionarCategoria(productoActual.getCategoria());
                 }
             }
 
@@ -264,11 +270,49 @@ public class EditarProductoActivity extends AppCompatActivity {
         });
     }
 
-    private void seleccionarCategoriaEnSpinner(String nombreCategoria) {
+    private void cargarSucursales() {
+        DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
+
+        sucursalRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaSucursales.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Sucursal sucursal = ds.getValue(Sucursal.class);
+                    sucursal.setIdSucursal(ds.getKey());
+                    listaSucursales.add(sucursal);
+                }
+                adapterSucursal.notifyDataSetChanged();
+
+                // Una vez cargadas, intentar seleccionar la categoría del producto
+                if (productoActual != null) {
+                    seleccionarSucursal(productoActual.getIdSucursal());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(EditarProductoActivity.this,
+                        "Error al cargar categorías.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void seleccionarCategoria(String nombreCategoria) {
         if (nombreCategoria == null || listaCategorias.isEmpty()) return;
         for (int i = 0; i < listaCategorias.size(); i++) {
             if (listaCategorias.get(i).toString().equalsIgnoreCase(nombreCategoria)) {
                 spCategoria.setSelection(i);
+                return;
+            }
+        }
+    }
+
+    private void seleccionarSucursal(String idSucursal) {
+        if (idSucursal == null || listaSucursales.isEmpty()) return;
+        for (int i = 0; i < listaSucursales.size(); i++) {
+            if (listaSucursales.get(i).getIdSucursal().equals(idSucursal)) {
+                spSucursal.setSelection(i);
                 return;
             }
         }
@@ -301,73 +345,88 @@ public class EditarProductoActivity extends AppCompatActivity {
     }
 
     private void actualizarProducto() {
-        String urlNuevaImagen = "", urlNuevoModelo = "";
-
         if (productoActual == null) {
             Toast.makeText(this, "Espera a que carguen los datos del producto.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (validarCampos()){
-            // Actualizar campos editables sobre el objeto actual
-            productoNuevo = new Producto(productoActual.getUrlImagenProducto(), productoActual.getUrlModelo3D(),
-                    txtNombre.getText().toString().trim().toUpperCase(), spCategoria.getSelectedItem().toString(),
-                    txtDescripcion.getText().toString().trim().toUpperCase(), Double.parseDouble(txtPrecio.getText().toString().trim()),
-                    Double.parseDouble(txtCantidad.getText().toString().trim()), "");
+        if (!validarCampos()) return;
 
-            productoNuevo.setIdProducto(productoActual.getIdProducto());
+        btnActualizarProducto.setEnabled(false);
 
-            if (uriFotoSeleccionada != null){
-                repositorio.actualizarImagenStorage(productoActual.getUrlImagenProducto(), uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
-                    @Override
-                    public void onExito(String urlDescarga) {
-                        productoNuevo.setUrlImagenProducto(urlDescarga);
-                    }
+        Sucursal sucursal = (Sucursal) spSucursal.getSelectedItem();
 
-                    @Override
-                    public void onError(String error) {
+        // Construimos el objeto con los datos del formulario,
+        // manteniendo las URLs actuales como punto de partida
+        productoNuevo = new Producto(
+                productoActual.getUrlImagenProducto(),
+                productoActual.getUrlModelo3D(),
+                txtNombre.getText().toString().trim().toUpperCase(),
+                spCategoria.getSelectedItem().toString(),
+                txtDescripcion.getText().toString().trim().toUpperCase(),
+                Double.parseDouble(txtPrecio.getText().toString().trim()),
+                Double.parseDouble(txtCantidad.getText().toString().trim()),
+                sucursal.getIdSucursal()
+        );
+        productoNuevo.setIdProducto(productoActual.getIdProducto());
 
-                    }
-                });
-            }
-
-            if (uriModeloSeleccionado != null){
-                repositorio.actualizarModelo3DStorage(productoActual.getUrlModelo3D(), uriModeloSeleccionado, new ProductoContrato.StorageCallBack() {
-                    @Override
-                    public void onExito(String urlDescarga) {
-                        productoNuevo.setUrlModelo3D(urlDescarga);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-
-                    }
-                });
-            }
-
-            if (!productoNuevo.equals(productoActual)){
-                // Llamar al repositorio pasando los datos nuevos del producto
-                repositorio.actualizarProducto(
-                        productoNuevo,
-                        new ProductoContrato.OperacionCallback() {
-                            @Override
-                            public void onExito(String mensaje) {
-                                Toast.makeText(EditarProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-
-                            @Override
-                            public void onError(String error) {
-                                btnActualizarProducto.setEnabled(true);
-                                Toast.makeText(EditarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
-                            }
+        // PASO 1: actualizar imagen si cambió → luego modelo → luego guardar en DB
+        if (uriFotoSeleccionada != null) {
+            repositorio.actualizarImagenStorage(productoActual.getUrlImagenProducto(), uriFotoSeleccionada,
+                    new ProductoContrato.StorageCallBack() {
+                        @Override
+                        public void onExito(String urlDescarga) {
+                            // URL de imagen actualizada, continuamos con modelo
+                            productoNuevo.setUrlImagenProducto(urlDescarga);
+                            actualizarModeloYGuardar();
                         }
-                );
-            }
-            else {
+                        @Override
+                        public void onError(String error) {
+                            btnActualizarProducto.setEnabled(true);
+                            Toast.makeText(EditarProductoActivity.this,
+                                    "Error al subir imagen: " + error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // No cambió la imagen, pasamos directo al modelo
+            actualizarModeloYGuardar();
+        }
+    }
+    private void actualizarModeloYGuardar() {
+        if (uriModeloSeleccionado != null) {
+            repositorio.actualizarModelo3DStorage(productoActual.getUrlModelo3D(), uriModeloSeleccionado,
+                    new ProductoContrato.StorageCallBack() {
+                        @Override
+                        public void onExito(String urlDescarga) {
+                            // URL de modelo actualizada, ahora sí guardamos en DB
+                            productoNuevo.setUrlModelo3D(urlDescarga);
+                            guardarEnDatabase();
+                        }
+                        @Override
+                        public void onError(String error) {
+                            btnActualizarProducto.setEnabled(true);
+                            Toast.makeText(EditarProductoActivity.this,
+                                    "Error al subir modelo: " + error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // No cambió el modelo, guardamos directo en DB
+            guardarEnDatabase();
+        }
+    }
+    private void guardarEnDatabase() {
+        repositorio.actualizarProducto(productoNuevo, new ProductoContrato.OperacionCallback() {
+            @Override
+            public void onExito(String mensaje) {
+                Toast.makeText(EditarProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }
+            @Override
+            public void onError(String error) {
+                btnActualizarProducto.setEnabled(true);
+                Toast.makeText(EditarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void abrirGaleria() {
