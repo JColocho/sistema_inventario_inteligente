@@ -91,7 +91,6 @@ public class ProductoRepository implements ProductoContrato{
         });
     }
 
-
     @Override
     public void obtenerProductosEnTiempoReal(String categoria, LeerCallback callback) {
         DatabaseReference productosRef = FirebaseDatabase.getInstance().getReference("Productos");

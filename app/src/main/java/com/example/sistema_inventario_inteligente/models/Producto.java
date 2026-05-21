@@ -9,6 +9,7 @@ public class Producto {
     private String descripcion;
     private Double precio;
     private Double cantidad;
+    private String idSucursal;
 
     public String getIdProducto() {
         return idProducto;
@@ -74,10 +75,18 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
+    public String getIdSucursal() {
+        return idSucursal;
+    }
+
+    public void setIdSucursal(String idSucursal) {
+        this.idSucursal = idSucursal;
+    }
+
     public Producto() {
     }
 
-    public Producto(String urlImagenProducto, String urlModelo3D, String nombre, String categoria, String descripcion, Double precio, Double cantidad) {
+    public Producto(String urlImagenProducto, String urlModelo3D, String nombre, String categoria, String descripcion, Double precio, Double cantidad, String idSucursal) {
         this.urlImagenProducto = urlImagenProducto;
         this.urlModelo3D = urlModelo3D;
         this.nombre = nombre;
@@ -85,5 +94,6 @@ public class Producto {
         this.descripcion = descripcion;
         this.precio = precio;
         this.cantidad = cantidad;
+        this.idSucursal = idSucursal;
     }
 }
