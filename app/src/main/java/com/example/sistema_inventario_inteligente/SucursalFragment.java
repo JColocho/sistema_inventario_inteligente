@@ -165,8 +165,18 @@ public class SucursalFragment extends Fragment implements OnMapReadyCallback {
                     if (location == null || getContext() == null) return;
                     latUser = location.getLatitude();
                     lngUser = location.getLongitude();
+                    habilitarPuntoUsuario();
                     actualizarConUbicacion();
                 });
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void habilitarPuntoUsuario() {
+        if (googleMap == null || getContext() == null) return;
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        }
     }
 
     private void cargarSucursales() {
@@ -253,6 +263,7 @@ public class SucursalFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap map) {
         googleMap = map;
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        habilitarPuntoUsuario();
         dibujarMarcadores();
     }
 
