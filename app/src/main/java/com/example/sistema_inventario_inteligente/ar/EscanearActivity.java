@@ -54,8 +54,6 @@ public class EscanearActivity extends AppCompatActivity {
     public static final String EXTRA_PRODUCTO_ID = "productoId";
 
     private static final String TAG = "EscanearActivity";
-    private static final String MODELO_GLOBAL_URL =
-            "https://firebasestorage.googleapis.com/v0/b/sistema-inventario-inteligente.firebasestorage.app/o/productos%2F-Osm6tsJNa-mSa_E6jbj%2FBox.glb?alt=media&token=cdaf5d84-0676-4d96-86a8-453f49041c42";
     private static final float MODELO_ESCALA_METROS = 0.3f;
     private static final double UMBRAL_SIMILITUD = 0.62;
     private static final int FRAMES_CONFIRMACION = 3;
@@ -441,11 +439,11 @@ public class EscanearActivity extends AppCompatActivity {
                     binding.arSceneView.getEngine(), anchor, null, null, null, null);
             binding.arSceneView.addChildNode(anchorActual);
 
-            String url = (productoActual != null
+            if (productoActual != null
                     && productoActual.getUrlModelo3D() != null
-                    && !productoActual.getUrlModelo3D().isEmpty())
-                    ? productoActual.getUrlModelo3D() : MODELO_GLOBAL_URL;
-            cargarModelo3D(url);
+                    && !productoActual.getUrlModelo3D().isEmpty()) {
+                cargarModelo3D(productoActual.getUrlModelo3D());
+            }
 
             detenerPulsoReticulo();
             binding.tvDebugScore.setVisibility(View.GONE);

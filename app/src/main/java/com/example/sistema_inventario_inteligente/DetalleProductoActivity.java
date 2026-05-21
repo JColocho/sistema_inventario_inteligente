@@ -94,44 +94,38 @@ public class DetalleProductoActivity extends AppCompatActivity {
         cargarDatosProducto();
     }
 
-    private void cargarDatosProducto(){
+    private void cargarDatosProducto() {
         productoRepositorio.obtenerProductoId(idProducto, new ProductoContrato.LeerIdCallback() {
             @Override
-            public void onProductoCargado(Producto productoObtenido) {
-                Producto producto = productoObtenido;
+            public void onProductoCargado(Producto producto) {
+                if (producto == null) { finish(); return; }
+
                 urlImagenRef = producto.getUrlImagenProducto();
-                urlModelo3D = producto.getUrlModelo3D();
+                urlModelo3D  = producto.getUrlModelo3D();
 
-                //Validando que ser encontró el producto.
-                if (producto != null){
-                    //Mostrar los datos del producto
-                    txtNombre.setText(producto.getNombre());
-                    txtDescripcion.setText(producto.getDescripcion());
-                    txtCategoria.setText(producto.getCategoria());
-                    txtPrecio.setText(String.format("$%.2f", producto.getPrecio()));
-                    txtCantidad.setText(producto.getCantidad().toString());
+                txtNombre.setText(producto.getNombre());
+                txtDescripcion.setText(producto.getDescripcion());
+                txtCategoria.setText(producto.getCategoria());
+                txtPrecio.setText(String.format("$%.2f", producto.getPrecio()));
+                txtCantidad.setText(producto.getCantidad().toString());
 
-                    StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(producto.getUrlImagenProducto());
+                StorageReference imageRef = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(producto.getUrlImagenProducto());
 
-                    //Cargar las imagen en el imageView
-                    GlideApp.with(DetalleProductoActivity.this)
-                            .load(imageRef)
-                            .placeholder(R.drawable.camara)
-                            .error(R.drawable.camara)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
-                            .centerCrop()
-                            .into(imgProducto);
-
-                }
-                else {
-                    finish();
-                }
+                GlideApp.with(DetalleProductoActivity.this)
+                        .load(imageRef)
+                        .placeholder(R.drawable.camara)
+                        .error(R.drawable.camara)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .centerCrop()
+                        .into(imgProducto);
             }
 
             @Override
             public void onError(String error) {
-
+                Toast.makeText(DetalleProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }

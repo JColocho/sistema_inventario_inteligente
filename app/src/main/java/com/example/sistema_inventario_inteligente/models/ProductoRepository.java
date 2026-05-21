@@ -1,12 +1,9 @@
 package com.example.sistema_inventario_inteligente.models;
 
 import android.net.Uri;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
-import com.example.sistema_inventario_inteligente.EditarProductoActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -99,9 +96,10 @@ public class ProductoRepository implements ProductoContrato{
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Producto> listaProductos = new ArrayList<>();
 
-                // Recorremos todos los nodos hijos en "Productos"
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Producto producto = ds.getValue(Producto.class);
+                    if (producto == null) continue;
+                    if (producto.getIdProducto() == null) producto.setIdProducto(ds.getKey());
                     listaProductos.add(producto);
                 }
 
@@ -148,10 +146,10 @@ public class ProductoRepository implements ProductoContrato{
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //Validamos que se haya encontrado el producto
-                if (snapshot.exists()){
-                    //Capturamos los datos del producto
+                if (snapshot.exists()) {
                     Producto producto = snapshot.getValue(Producto.class);
-                    //Enviando los datos del producto
+                    if (producto != null && producto.getIdProducto() == null)
+                        producto.setIdProducto(snapshot.getKey());
                     callback.onProductoCargado(producto);
                 }
                 else {
