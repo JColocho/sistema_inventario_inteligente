@@ -2,46 +2,54 @@ package com.example.sistema_inventario_inteligente;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sistema_inventario_inteligente.adapters.ProductoAdapater;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InventarioFragment extends Fragment {
-    public RecyclerView rvProducto;
-    public Button btnAgregar;
-    public ProductoAdapater productoAdapater;
-    public ArrayList<Producto> listaProductos;
+    private RecyclerView rvProducto;
+    private Button btnAgregar;
+    private TextInputEditText etBuscar;
+    private ChipGroup chipGroupCategorias;
+    private Chip chipTodo, chipComputadora, chipCelular, chipPeriferico, chipOtros, chipAudio, chipTelevisor, chipTableta;
+    private TextView tvContadorProductos;
+
+    // Datos
+    private ProductoAdapater productoAdapater;
+    private final ArrayList<Producto> listaProductos = new ArrayList<>();
+
+    // Lista filtrada de productos por categoria
+    private final ArrayList<Producto> listaFiltrada = new ArrayList<>();
+
     private ProductoContrato repositorio;
+    private String categoriaActiva = "";
+    private String textoBusqueda = "";
 
+    public InventarioFragment() {}
 
-    public InventarioFragment() {
-        // Required empty public constructor
-    }
     public static InventarioFragment newInstance() {
         InventarioFragment fragment = new InventarioFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+        fragment.setArguments(new Bundle());
         return fragment;
     }
 
@@ -57,45 +65,125 @@ public class InventarioFragment extends Fragment {
 
         repositorio = new ProductoRepository();
 
-        listaProductos = new ArrayList<>();
-        productoAdapater = new ProductoAdapater(listaProductos);
-
         rvProducto = view.findViewById(R.id.rvProductos);
         btnAgregar = view.findViewById(R.id.btnAgregar);
+        etBuscar = view.findViewById(R.id.etBuscar);
+        chipGroupCategorias = view.findViewById(R.id.chipGroupCategorias);
+        tvContadorProductos = view.findViewById(R.id.tvContadorProductos);
 
+        chipTodo = view.findViewById(R.id.chipTodos);
+        chipComputadora = view.findViewById(R.id.chipComputadoras);
+        chipTableta = view.findViewById(R.id.chipTablets);
+        chipCelular = view.findViewById(R.id.chipCelulares);
+        chipPeriferico = view.findViewById(R.id.chipPerifericos);
+        chipOtros = view.findViewById(R.id.chipOtros);
+        chipAudio = view.findViewById(R.id.chipAudio);
+        chipTelevisor = view.findViewById(R.id.chipTelevisores);
+
+        productoAdapater = new ProductoAdapater(listaFiltrada);
         rvProducto.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        btnAgregar.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), AgregarProductoActivity.class);
-            startActivity(intent);
-        });
-
         rvProducto.setAdapter(productoAdapater);
 
+        etBuscar.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                textoBusqueda = s.toString().trim();
+                aplicarFiltros();
+            }
+        });
+
+        //Filtros por categoria
+        chipGroupCategorias.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            //Validando que este seleccionado un chip
+            if (checkedIds.isEmpty()) return;
+
+            int chipId = checkedIds.get(0);
+
+            //Identificamos la categoría seleccionada
+            if      (chipId == chipTodo.getId()){
+                categoriaActiva = "";
+            }
+            else if (chipId == chipComputadora.getId()){
+                categoriaActiva = "COMPUTADORA";
+            }
+            else if (chipId == chipCelular.getId()){
+                categoriaActiva = "CELULAR";
+            }
+            else if (chipId == chipTableta.getId()) {
+                categoriaActiva = "TABLETA";
+            }
+            else if (chipId == chipAudio.getId()) {
+                categoriaActiva = "AUDIO";
+            }
+            else if (chipId == chipTelevisor.getId()){
+                categoriaActiva = "TELEVISOR";
+            }
+            else if (chipId == chipPeriferico.getId()){
+                categoriaActiva = "PERIFERICO";
+            }
+            else if (chipId == chipOtros.getId()){
+                categoriaActiva = "OTROS";
+            }
+            aplicarFiltros();
+        });
+
+        btnAgregar.setOnClickListener(v ->
+                startActivity(new Intent(getContext(), AgregarProductoActivity.class)));
         cargarProductos();
 
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        cargarProductos();
+    //Metodo para filtrado de productos por categoria y nombre
+    private void aplicarFiltros() {
+        listaFiltrada.clear();
+
+        for (Producto itemProducto : listaProductos) {
+
+            //Filtro para categoria
+            boolean pasaCategoria = categoriaActiva.isEmpty()
+                    || (itemProducto.getCategoria() != null
+                    && itemProducto.getCategoria().equalsIgnoreCase(categoriaActiva));
+
+            //Filtro para busqueda por nombre
+            boolean pasaBusqueda = textoBusqueda.isEmpty()
+                    || (itemProducto.getNombre() != null
+                    && itemProducto.getNombre().toLowerCase().contains(textoBusqueda.toLowerCase()));
+
+            if (pasaCategoria && pasaBusqueda) {
+                listaFiltrada.add(itemProducto);
+            }
+        }
+
+        productoAdapater.notifyDataSetChanged();
+        actualizarContador();
     }
 
-    //Metodo para cargar los datos en tiempo real
-    private void cargarProductos(){
+    //Metodo para actualizar contador de productos
+    private void actualizarContador() {
+        int numeroProductos = listaProductos.size();
+        tvContadorProductos.setText(numeroProductos + " productos");
+    }
+    //Metodo para cargar todos los productos desde Firebase
+    private void cargarProductos() {
+        //Cargando los productos en tiempo real
         repositorio.obtenerProductosEnTiempoReal("", new ProductoContrato.LeerCallback() {
             @Override
             public void onProductosCargados(List<Producto> productos) {
+                //Limpiar lista
                 listaProductos.clear();
+                //Cargar lista con los productos actualizados
                 listaProductos.addAll(productos);
-                productoAdapater.notifyDataSetChanged();
+
+                //Aplicar filtros
+                aplicarFiltros();
             }
 
             @Override
             public void onError(String error) {
-                //  Usamos el contexto nativo del fragmento actual de forma segura
                 if (getContext() != null) {
                     Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
                 }

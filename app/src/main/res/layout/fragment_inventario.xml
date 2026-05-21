@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/bg_secondary"
     tools:context=".InventarioFragment">
-
-    <!-- ── Contenido principal (scroll) ── -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,9 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="24dp">
-
-            <!-- ── ENCABEZADO ── -->
-            <!-- Titulo "Inventario" -->
             <TextView
                 android:id="@+id/tvTituloInventario"
                 android:layout_width="0dp"
@@ -38,7 +33,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Boton FAB-like (+) en la esquina superior derecha -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAgregar"
                 style="@style/Widget.MaterialComponents.Button"
@@ -57,7 +51,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- ── BARRA DE BUSQUEDA ── -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilBuscar"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -91,7 +84,7 @@
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- ── CHIPS DE CATEGORIA (scroll horizontal) ── -->
+
             <HorizontalScrollView
                 android:id="@+id/hsvCategorias"
                 android:layout_width="0dp"
@@ -119,8 +112,8 @@
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:text="Todos"
-                        android:textColor="@color/bg_primary"
-                        app:chipBackgroundColor="@color/accent_teal"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
                         app:chipCornerRadius="8dp" />
 
                     <com.google.android.material.chip.Chip
@@ -129,18 +122,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Computadoras"
-                        android:textColor="@color/chip_computadoras_text"
-                        app:chipBackgroundColor="@color/chip_computadoras_bg"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
                         app:chipCornerRadius="8dp" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chipSmartphones"
+                        android:id="@+id/chipCelulares"
                         style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Smartphones"
-                        android:textColor="@color/chip_smartphones_text"
-                        app:chipBackgroundColor="@color/chip_smartphones_bg"
+                        android:text="Celulares"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
                         app:chipCornerRadius="8dp" />
 
                     <com.google.android.material.chip.Chip
@@ -149,8 +142,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tablets"
-                        android:textColor="@color/text_secondary"
-                        app:chipBackgroundColor="@color/bg_card_elevated"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
                         app:chipCornerRadius="8dp" />
 
                     <com.google.android.material.chip.Chip
@@ -159,8 +152,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Audio"
-                        android:textColor="@color/chip_audio_text"
-                        app:chipBackgroundColor="@color/chip_audio_bg"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
                         app:chipCornerRadius="8dp" />
 
                     <com.google.android.material.chip.Chip
@@ -169,21 +162,40 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Televisores"
-                        android:textColor="@color/chip_televisores_text"
-                        app:chipBackgroundColor="@color/chip_televisores_bg"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPerifericos"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Perifericos"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
+                        app:chipCornerRadius="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOtros"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Otros"
+                        android:textColor="@drawable/chip_selector_text"
+                        app:chipBackgroundColor="@drawable/chip_selector_bg"
                         app:chipCornerRadius="8dp" />
 
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 
-            <!-- ── FILA: contador + ordenar ── -->
             <TextView
                 android:id="@+id/tvContadorProductos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
-                android:text="6 productos"
+                android:text="0 productos"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -201,7 +213,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/hsvCategorias" />
 
-            <!-- ── LISTA DE PRODUCTOS (RecyclerView) ── -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProductos"
                 android:layout_width="0dp"
