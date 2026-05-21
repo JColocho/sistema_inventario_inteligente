@@ -313,7 +313,7 @@ public class EditarProductoActivity extends AppCompatActivity {
             productoNuevo = new Producto(productoActual.getUrlImagenProducto(), productoActual.getUrlModelo3D(),
                     txtNombre.getText().toString().trim().toUpperCase(), spCategoria.getSelectedItem().toString(),
                     txtDescripcion.getText().toString().trim().toUpperCase(), Double.parseDouble(txtPrecio.getText().toString().trim()),
-                    Double.parseDouble(txtCantidad.getText().toString().trim()));
+                    Double.parseDouble(txtCantidad.getText().toString().trim()), "");
 
             productoNuevo.setIdProducto(productoActual.getIdProducto());
 

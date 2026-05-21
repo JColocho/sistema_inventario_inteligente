@@ -380,7 +380,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
                                         //Capturamos todos lo datos del producto en el objeto
                                         Producto producto = new Producto(urlImagenProducto, urlModelo3D,nombre, categoria, descripcion,
-                                                precio, cantidad, sucursal.getId());
+                                                precio, cantidad, sucursal.getIdSucursal());
 
                                         //Hacemos la inserción en el repositorio
                                         repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {
