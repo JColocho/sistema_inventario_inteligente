@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sistema_inventario_inteligente.adapters.ProductoAdapater;
+import com.example.sistema_inventario_inteligente.adapters.ProductoAdapter;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
@@ -35,7 +35,7 @@ public class InventarioFragment extends Fragment {
     private TextView tvContadorProductos;
 
     // Datos
-    private ProductoAdapater productoAdapater;
+    private ProductoAdapter productoAdapater;
     private final ArrayList<Producto> listaProductos = new ArrayList<>();
 
     // Lista filtrada de productos por categoria
@@ -80,7 +80,7 @@ public class InventarioFragment extends Fragment {
         chipAudio = view.findViewById(R.id.chipAudio);
         chipTelevisor = view.findViewById(R.id.chipTelevisores);
 
-        productoAdapater = new ProductoAdapater(listaFiltrada);
+        productoAdapater = new ProductoAdapter(listaFiltrada);
         rvProducto.setLayoutManager(new LinearLayoutManager(getContext()));
         rvProducto.setAdapter(productoAdapater);
 

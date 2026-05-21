@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sistema_inventario_inteligente.adapters.ProductoAdapater;
+import com.example.sistema_inventario_inteligente.adapters.ProductoAdapter;
 import com.example.sistema_inventario_inteligente.ar.EscanearActivity;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
@@ -27,7 +27,7 @@ public class InicioFragment extends Fragment {
     private RecyclerView rvRecientes;
     private View progressRecientes, layoutVacioRecientes;
 
-    private ProductoAdapater adapterRecientes;
+    private ProductoAdapter adapterRecientes;
     private final ArrayList<Producto> listaRecientes = new ArrayList<>();
     private final ProductoContrato repositorio = new ProductoRepository();
 
@@ -55,7 +55,7 @@ public class InicioFragment extends Fragment {
         progressRecientes    = view.findViewById(R.id.progressRecientes);
         layoutVacioRecientes = view.findViewById(R.id.layoutVacioRecientes);
 
-        adapterRecientes = new ProductoAdapater(listaRecientes);
+        adapterRecientes = new ProductoAdapter(listaRecientes);
         rvRecientes.setLayoutManager(new LinearLayoutManager(getContext()));
         rvRecientes.setAdapter(adapterRecientes);
         rvRecientes.setNestedScrollingEnabled(false);

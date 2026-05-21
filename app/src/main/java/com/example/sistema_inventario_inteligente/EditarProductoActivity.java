@@ -263,19 +263,16 @@ public class EditarProductoActivity extends AppCompatActivity {
     }
 
     private void actualizarProducto() {
-        String urlNuevaImagen = "", urlNuevoModelo = "";
-
         if (productoActual == null) {
             Toast.makeText(this, "Espera a que carguen los datos del producto.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (validarCampos()){
-            // Actualizar campos editables sobre el objeto actual
             productoNuevo = new Producto(productoActual.getUrlImagenProducto(), productoActual.getUrlModelo3D(),
                     txtNombre.getText().toString().trim().toUpperCase(), spCategoria.getSelectedItem().toString(),
                     txtDescripcion.getText().toString().trim().toUpperCase(), Double.parseDouble(txtPrecio.getText().toString().trim()),
-                    Double.parseDouble(txtCantidad.getText().toString().trim()), productoActual.getIdSucursal());
+                    Double.parseDouble(txtCantidad.getText().toString().trim()));
 
             productoNuevo.setIdProducto(productoActual.getIdProducto());
 
