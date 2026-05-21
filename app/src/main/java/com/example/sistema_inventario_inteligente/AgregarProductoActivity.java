@@ -40,7 +40,6 @@ import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.example.sistema_inventario_inteligente.models.Sucursal;
 import com.example.sistema_inventario_inteligente.models.SucursalContrato;
 import com.example.sistema_inventario_inteligente.models.SucursalRepository;
-import com.example.sistema_inventario_inteligente.models.VectoresIA;
 
 import java.io.File;
 import java.io.IOException;
@@ -270,25 +269,25 @@ public class AgregarProductoActivity extends AppCompatActivity {
 
         // Extraer embedding en hilo de fondo, luego subir a Firebase
         executor.execute(() -> {
-            VectoresIA vectoresIA = null;
+            List<Double> vectoresIA = null;
             if (embeddingHelper != null) {
                 try {
                     Bitmap bmp = decodificarBitmap(uriFotoSeleccionada);
                     float[] vector = embeddingHelper.extraer(bmp);
                     ArrayList<Double> listaVector = new ArrayList<>();
                     for (float f : vector) listaVector.add((double) f);
-                    vectoresIA = new VectoresIA(listaVector);
+                    vectoresIA = listaVector;
                 } catch (Exception e) {
                     Log.e("Embedding", "Error al extraer vector", e);
                 }
             }
-            VectoresIA vectoresFinal = vectoresIA;
+            List<Double> vectoresFinal = vectoresIA;
             runOnUiThread(() -> subirYGuardar(nombre, categoria, descripcion, precio, cantidad, idSucursal, vectoresFinal));
         });
     }
 
     private void subirYGuardar(String nombre, String categoria, String descripcion,
-                                double precio, double cantidad, String idSucursal, VectoresIA vectoresIA) {
+                                double precio, double cantidad, String idSucursal, List<Double> vectoresIA) {
         repositorio.subirImagenStorage(uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
             @Override
             public void onExito(String urlDescarga) {

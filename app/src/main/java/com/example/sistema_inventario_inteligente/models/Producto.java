@@ -1,5 +1,7 @@
 package com.example.sistema_inventario_inteligente.models;
 
+import java.util.List;
+
 public class Producto {
     private String idProducto;
     private String nombre;
@@ -10,7 +12,7 @@ public class Producto {
     private String urlImagenProducto;
     private String urlModelo3D;
     private String idSucursal;
-    private VectoresIA vectoresIA;
+    private List<Double> vectoresIA;
 
     public Producto() {}
 
@@ -52,6 +54,6 @@ public class Producto {
     public String getIdSucursal() { return idSucursal; }
     public void setIdSucursal(String idSucursal) { this.idSucursal = idSucursal; }
 
-    public VectoresIA getVectoresIA() { return vectoresIA; }
-    public void setVectoresIA(VectoresIA vectoresIA) { this.vectoresIA = vectoresIA; }
+    public List<Double> getVectoresIA() { return vectoresIA; }
+    public void setVectoresIA(List<Double> vectoresIA) { this.vectoresIA = vectoresIA; }
 }

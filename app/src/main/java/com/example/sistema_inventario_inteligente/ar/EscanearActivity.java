@@ -272,8 +272,8 @@ public class EscanearActivity extends AppCompatActivity {
     }
 
     private double similitudConProducto(float[] vectorVivo, Producto p) {
-        if (p.getVectoresIA().getVector() == null) return 0.0;
-        return EmbeddingHelper.similitudCoseno(vectorVivo, listToFloat(p.getVectoresIA().getVector()));
+        if (p.getVectoresIA() == null) return 0.0;
+        return EmbeddingHelper.similitudCoseno(vectorVivo, listToFloat(p.getVectoresIA()));
     }
 
     private float[] listToFloat(List<Double> list) {
@@ -386,7 +386,7 @@ public class EscanearActivity extends AppCompatActivity {
                 repositorio.detenerEscucha();
                 productosConVectores = new ArrayList<>();
                 for (Producto p : productos) {
-                    if (p.getVectoresIA() != null && p.getVectoresIA().getVector() != null) {
+                    if (p.getVectoresIA() != null && !p.getVectoresIA().isEmpty()) {
                         productosConVectores.add(p);
                     }
                 }

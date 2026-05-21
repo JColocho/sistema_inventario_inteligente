@@ -1,6 +1,7 @@
 package com.example.sistema_inventario_inteligente.models;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -97,7 +98,7 @@ public class ProductoRepository implements ProductoContrato{
                 List<Producto> listaProductos = new ArrayList<>();
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    Producto producto = ds.getValue(Producto.class);
+                    Producto producto = deserializarProducto(ds);
                     if (producto == null) continue;
                     if (producto.getIdProducto() == null) producto.setIdProducto(ds.getKey());
                     listaProductos.add(producto);
@@ -147,7 +148,7 @@ public class ProductoRepository implements ProductoContrato{
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //Validamos que se haya encontrado el producto
                 if (snapshot.exists()) {
-                    Producto producto = snapshot.getValue(Producto.class);
+                    Producto producto = deserializarProducto(snapshot);
                     if (producto != null && producto.getIdProducto() == null)
                         producto.setIdProducto(snapshot.getKey());
                     callback.onProductoCargado(producto);
@@ -238,5 +239,33 @@ public class ProductoRepository implements ProductoContrato{
         }).addOnFailureListener(e -> {
             callBack.onError("Error al eliminar el modelo 3D" + e.getMessage());
         });
+    }
+
+    // Deserializa un Producto tolerando el formato antiguo de vectoresIA ({ vector: [...] }).
+    // Si la deserialización directa falla, reconstruye el objeto campo a campo omitiendo vectoresIA.
+    private Producto deserializarProducto(DataSnapshot ds) {
+        try {
+            return ds.getValue(Producto.class);
+        } catch (Exception e) {
+            Log.w("ProductoRepository", "vectoresIA en formato antiguo en " + ds.getKey() + ", omitiendo vector");
+            Producto p = new Producto();
+            if (ds.child("nombre").getValue() != null)
+                p.setNombre(ds.child("nombre").getValue(String.class));
+            if (ds.child("categoria").getValue() != null)
+                p.setCategoria(ds.child("categoria").getValue(String.class));
+            if (ds.child("descripcion").getValue() != null)
+                p.setDescripcion(ds.child("descripcion").getValue(String.class));
+            if (ds.child("precio").getValue() != null)
+                p.setPrecio(ds.child("precio").getValue(Double.class));
+            if (ds.child("cantidad").getValue() != null)
+                p.setCantidad(ds.child("cantidad").getValue(Double.class));
+            if (ds.child("urlImagenProducto").getValue() != null)
+                p.setUrlImagenProducto(ds.child("urlImagenProducto").getValue(String.class));
+            if (ds.child("urlModelo3D").getValue() != null)
+                p.setUrlModelo3D(ds.child("urlModelo3D").getValue(String.class));
+            if (ds.child("idSucursal").getValue() != null)
+                p.setIdSucursal(ds.child("idSucursal").getValue(String.class));
+            return p;
+        }
     }
 }

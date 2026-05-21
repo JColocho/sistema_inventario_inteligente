@@ -42,7 +42,6 @@ import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.example.sistema_inventario_inteligente.models.Sucursal;
 import com.example.sistema_inventario_inteligente.models.SucursalContrato;
 import com.example.sistema_inventario_inteligente.models.SucursalRepository;
-import com.example.sistema_inventario_inteligente.models.VectoresIA;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -315,19 +314,19 @@ public class EditarProductoActivity extends AppCompatActivity {
         if (uriFotoSeleccionada != null) {
             // Recalcular embedding antes de subir la nueva imagen
             executor.execute(() -> {
-                VectoresIA vectoresIA = null;
+                List<Double> vectoresIA = null;
                 if (embeddingHelper != null) {
                     try {
                         Bitmap bmp = decodificarBitmap(uriFotoSeleccionada);
                         float[] vector = embeddingHelper.extraer(bmp);
                         ArrayList<Double> lista = new ArrayList<>();
                         for (float f : vector) lista.add((double) f);
-                        vectoresIA = new VectoresIA(lista);
+                        vectoresIA = lista;
                     } catch (Exception e) {
                         Log.e(TAG, "Error al extraer embedding", e);
                     }
                 }
-                VectoresIA vFinal = vectoresIA;
+                List<Double> vFinal = vectoresIA;
                 runOnUiThread(() -> subirImagenYContinuar(vFinal));
             });
         } else if (uriModeloSeleccionado != null) {
@@ -337,7 +336,7 @@ public class EditarProductoActivity extends AppCompatActivity {
         }
     }
 
-    private void subirImagenYContinuar(VectoresIA vectoresIA) {
+    private void subirImagenYContinuar(List<Double> vectoresIA) {
         repositorio.actualizarImagenStorage(productoActual.getUrlImagenProducto(),
                 uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
             @Override
