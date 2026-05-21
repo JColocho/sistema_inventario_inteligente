@@ -111,60 +111,6 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <!-- Overlay de ayuda -->
-    <LinearLayout
-        android:id="@+id/layoutAyuda"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:background="#99000000"
-        android:padding="32dp"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/tvAyudaTitulo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/tvAyudaSubtitulo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#CCFFFFFF"
-            android:textSize="13sp"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp" />
-
-        <LinearLayout
-            android:id="@+id/layoutTips"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            android:background="@drawable/bg_ar_hud"
-            android:padding="16dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAyudaContinuar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            app:backgroundTint="@color/accent"
-            app:cornerRadius="999dp" />
-
-    </LinearLayout>
-
     <!-- ── BARRA SUPERIOR ─────────────────────────────────────────────────── -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -255,6 +201,42 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Indicador off-screen: apunta hacia el modelo cuando sale de cámara -->
+    <ImageView
+        android:id="@+id/ivIndicadorOffscreen"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_chevron_right"
+        android:background="@drawable/bg_ar_hud"
+        android:padding="6dp"
+        android:contentDescription="Objeto fuera de cámara"
+        android:visibility="gone" />
+
+    <!-- Hint no invasivo: aparece después de detectar el producto, antes de colocar -->
+    <LinearLayout
+        android:id="@+id/layoutHintSuperficie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/bg_ar_hud"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Toca una superficie plana para colocar"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
     <!-- ── PANEL INFERIOR ─────────────────────────────────────────────────── -->
     <LinearLayout
         android:id="@+id/cardEstado"
@@ -322,15 +304,46 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:visibility="gone">
 
+            <!-- Divisor -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/ar_divider"
-                android:layout_marginBottom="14dp" />
+                android:layout_marginBottom="12dp" />
 
+            <!-- Cabecera: etiqueta + botón cerrar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    style="@style/TextEyebrow"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="PRODUCTO DETECTADO" />
+
+                <TextView
+                    android:id="@+id/btnCerrarInfoAR"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:text="✕"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_ar_hud"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+            <!-- Fila: thumbnail + nombre + precio -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -339,9 +352,9 @@
 
                 <ImageView
                     android:id="@+id/ivProductoThumbAR"
-                    android:layout_width="68dp"
-                    android:layout_height="68dp"
-                    android:layout_marginEnd="14dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="12dp"
                     android:scaleType="centerCrop"
                     android:background="@drawable/bg_ar_hud"
                     android:visibility="gone" />
@@ -357,48 +370,32 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textStyle="bold"
-                        android:maxLines="2"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         tools:text="Producto detectado" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tvProductoPrecioAR"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="4dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/tvProductoSkuAR"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textSize="11sp"
-                            android:fontFamily="monospace"
-                            tools:text="SKU-001" />
-
-                        <TextView
-                            android:id="@+id/tvProductoPrecioAR"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/ar_coord_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="$299.00" />
-
-                    </LinearLayout>
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/ar_coord_color"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="$299.00" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Fila chips: solo categoría (stock chip removido) -->
+            <!-- Chip de categoría -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -419,45 +416,20 @@
 
             </LinearLayout>
 
-            <!-- Botones -->
-            <LinearLayout
+            <!-- Botón Ver ficha -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerFichaAR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="14dp"
-                android:weightSum="2">
+                android:layout_marginTop="12dp"
+                android:text="Ver ficha completa"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:backgroundTint="@color/accent"
+                app:cornerRadius="999dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnVerFichaAR"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:text="Ver ficha"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    app:backgroundTint="@color/accent"
-                    app:cornerRadius="999dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCerrarInfoAR"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:text="Cerrar"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    app:strokeColor="@color/ar_divider"
-                    app:cornerRadius="999dp"
-                    android:textSize="16dp"/>
-
-            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
