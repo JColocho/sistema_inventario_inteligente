@@ -13,8 +13,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -366,21 +364,11 @@ public class EscanearActivity extends AppCompatActivity {
         panelMinimizado = !panelMinimizado;
         if (panelMinimizado) {
             binding.tvInstruccion.setVisibility(View.GONE);
-            Animation salida = AnimationUtils.loadAnimation(this, R.anim.slide_down_exit);
-            salida.setAnimationListener(new Animation.AnimationListener() {
-                @Override public void onAnimationStart(Animation a) {}
-                @Override public void onAnimationRepeat(Animation a) {}
-                @Override public void onAnimationEnd(Animation a) {
-                    binding.layoutInfoProducto.setVisibility(View.GONE);
-                }
-            });
-            binding.layoutInfoProducto.startAnimation(salida);
+            binding.layoutInfoProducto.setVisibility(View.GONE);
             binding.btnMinimizarPanel.animate().rotation(270f).setDuration(200).start();
         } else {
             binding.tvInstruccion.setVisibility(View.VISIBLE);
             binding.layoutInfoProducto.setVisibility(View.VISIBLE);
-            binding.layoutInfoProducto.startAnimation(
-                    AnimationUtils.loadAnimation(this, R.anim.slide_up_enter));
             binding.btnMinimizarPanel.animate().rotation(90f).setDuration(200).start();
         }
     }
@@ -531,8 +519,6 @@ public class EscanearActivity extends AppCompatActivity {
         binding.btnMinimizarPanel.setRotation(90f);
 
         binding.layoutInfoProducto.setVisibility(View.VISIBLE);
-        binding.layoutInfoProducto.startAnimation(
-                AnimationUtils.loadAnimation(this, R.anim.slide_up_enter));
     }
 
     private void mostrarEtiqueta(Producto p) {
@@ -590,22 +576,12 @@ public class EscanearActivity extends AppCompatActivity {
 
             if (!estabaVisible && !etiquetaYaAnimada) {
                 etiquetaYaAnimada = true;
-                binding.layoutEtiquetaFlotante.startAnimation(
-                        AnimationUtils.loadAnimation(this, R.anim.scale_fade_in));
             }
         });
     }
 
     private void ocultarInfoProducto() {
-        Animation salida = AnimationUtils.loadAnimation(this, R.anim.slide_down_exit);
-        salida.setAnimationListener(new Animation.AnimationListener() {
-            @Override public void onAnimationStart(Animation a) {}
-            @Override public void onAnimationRepeat(Animation a) {}
-            @Override public void onAnimationEnd(Animation a) {
-                binding.layoutInfoProducto.setVisibility(View.GONE);
-            }
-        });
-        binding.layoutInfoProducto.startAnimation(salida);
+        binding.layoutInfoProducto.setVisibility(View.GONE);
 
         if (anchorActual != null) {
             binding.arSceneView.removeChildNode(anchorActual);
