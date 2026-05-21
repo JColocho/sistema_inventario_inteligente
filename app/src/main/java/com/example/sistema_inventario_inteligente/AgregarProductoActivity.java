@@ -4,6 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -30,10 +34,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.sistema_inventario_inteligente.ar.EmbeddingHelper;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.example.sistema_inventario_inteligente.models.Sucursal;
+import com.example.sistema_inventario_inteligente.models.VectoresIA;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,7 +48,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AgregarProductoActivity extends AppCompatActivity {
 
@@ -51,9 +60,8 @@ public class AgregarProductoActivity extends AppCompatActivity {
     };
 
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
-    public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo , btnGuardarProducto;
-    public EditText txtNombre, txtDescripcion, txtPrecio,
-            txtCantidad;
+    public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo, btnGuardarProducto;
+    public EditText txtNombre, txtDescripcion, txtPrecio, txtCantidad;
     public String rutaCamara;
     private Uri uriImageCamara;
     private Uri uriModeloSelccionado = null;
@@ -67,31 +75,43 @@ public class AgregarProductoActivity extends AppCompatActivity {
     public LinearLayout layoutModeloSeleccionado;
     public TextView txtNombreModelo;
 
+    private EmbeddingHelper embeddingHelper;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     private final ActivityResultLauncher<PickVisualMediaRequest> selecionarImagen =
-            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri ->{
-                if (uri != null){
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                if (uri != null) {
                     uriFotoSeleccionada = uri;
                     imgProducto.setImageURI(uri);
                 }
             });
+
     private final ActivityResultLauncher<Uri> seleccionaImagenCamara =
-            registerForActivityResult(new ActivityResultContracts.TakePicture(),resultado-> {
-                if(resultado!=null){
+            registerForActivityResult(new ActivityResultContracts.TakePicture(), resultado -> {
+                if (resultado != null) {
                     uriFotoSeleccionada = uriImageCamara;
                     imgProducto.setImageURI(uriImageCamara);
-                }else {
+                } else {
                     Toast.makeText(this, "No se tomo la foto", Toast.LENGTH_SHORT).show();
                 }
             });
+
     private final ActivityResultLauncher<String[]> selectorModelo =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
                 if (uri != null) {
-                    // Persiste el permiso para poder leerlo después
                     getContentResolver().takePersistableUriPermission(
-                            uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    );
+                            uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     uriModeloSelccionado = uri;
                     mostrarModeloSeleccionado(uri);
+                }
+            });
+
+    private final ActivityResultLauncher<String> seleccionaImagenCamara2 =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), resultado -> {
+                if (resultado) {
+                    abrirCamara();
+                } else {
+                    Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -103,34 +123,26 @@ public class AgregarProductoActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
-            v.setPadding(
-                    systemBars.left,
-                    systemBars.top,
-                    systemBars.right,
-                    Math.max(systemBars.bottom, imeInsets.bottom)
-            );
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right,
+                    Math.max(systemBars.bottom, imeInsets.bottom));
             return insets;
         });
-        imgProducto = findViewById(R.id.imgProductoRef);
 
+        imgProducto            = findViewById(R.id.imgProductoRef);
         layoutModeloSeleccionado = findViewById(R.id.layoutModeloSeleccionado);
-
-        txtNombreModelo = findViewById(R.id.txtNombreModelo);
-        txtNombre = findViewById(R.id.txtNombreProductoAdd);
-        txtDescripcion = findViewById(R.id.txtDescripcionAdd);
-        txtPrecio = findViewById(R.id.txtPrecioAdd);
-        txtCantidad = findViewById(R.id.txtCantidadAdd);
-
-        spCategoria = findViewById(R.id.spCategoriaAdd);
-        spSucursales = findViewById(R.id.spSucursalAdd);
-
-
-        btnAtras = findViewById(R.id.btnAddBack);
-        btnGuardarCamara = findViewById(R.id.btnCamaraAddProducto);
-        btnSeleccionarModelo = findViewById(R.id.btnSeleccionarModelo);
-        btnQuitarModelo = findViewById(R.id.btnQuitarModelo);
-        btnGuardarGaleria = findViewById(R.id.btnGaleriaAddProducto);
-        btnGuardarProducto = findViewById(R.id.btnGuardarProducto);
+        txtNombreModelo        = findViewById(R.id.txtNombreModelo);
+        txtNombre              = findViewById(R.id.txtNombreProductoAdd);
+        txtDescripcion         = findViewById(R.id.txtDescripcionAdd);
+        txtPrecio              = findViewById(R.id.txtPrecioAdd);
+        txtCantidad            = findViewById(R.id.txtCantidadAdd);
+        spCategoria            = findViewById(R.id.spCategoriaAdd);
+        spSucursales           = findViewById(R.id.spSucursalAdd);
+        btnAtras               = findViewById(R.id.btnAddBack);
+        btnGuardarCamara       = findViewById(R.id.btnCamaraAddProducto);
+        btnSeleccionarModelo   = findViewById(R.id.btnSeleccionarModelo);
+        btnQuitarModelo        = findViewById(R.id.btnQuitarModelo);
+        btnGuardarGaleria      = findViewById(R.id.btnGaleriaAddProducto);
+        btnGuardarProducto     = findViewById(R.id.btnGuardarProducto);
 
         listaSucursales = new ArrayList<>();
         adapterSucursal = new ArrayAdapter<>(this, R.layout.spinner_item, listaSucursales);
@@ -142,265 +154,229 @@ public class AgregarProductoActivity extends AppCompatActivity {
         adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);
         spCategoria.setAdapter(adapterCategoria);
 
-
-        btnAtras.setOnClickListener(v -> {
-            finish();
-        });
-
-        btnSeleccionarModelo.setOnClickListener(v -> {
-            selectorModelo.launch(new String[]{"*/*"});
-        });
-
+        btnAtras.setOnClickListener(v -> finish());
+        btnSeleccionarModelo.setOnClickListener(v -> selectorModelo.launch(new String[]{"*/*"}));
         btnQuitarModelo.setOnClickListener(v -> {
             uriModeloSelccionado = null;
             layoutModeloSeleccionado.setVisibility(View.GONE);
         });
-
-        btnGuardarGaleria.setOnClickListener(v -> {abrirGaleria();});
-        btnGuardarCamara.setOnClickListener(v -> {validarPermisoCamara();});
-
+        btnGuardarGaleria.setOnClickListener(v -> abrirGaleria());
+        btnGuardarCamara.setOnClickListener(v -> validarPermisoCamara());
         btnGuardarProducto.setOnClickListener(v -> {
             btnGuardarProducto.setEnabled(false);
             guardarProducto();
         });
-    }
-    //Metodo para validar los campos
-    private boolean validarCampos(){
 
-        if (txtNombre.getText().toString().trim().isEmpty()){
-            txtNombre.setText("");
-            txtNombre.setError("Campo vacio.");
-            return false;
-        }
-
-        if (txtDescripcion.getText().toString().trim().isEmpty()){
-            txtDescripcion.setText("");
-            txtDescripcion.setError("Campo vacio.");
-            return false;
-        }
-
-        if (txtPrecio.getText().toString().trim().isEmpty() ||
-                Double.parseDouble(txtPrecio.getText().toString().trim()) <= 0){
-            txtPrecio.setError("Precio invalido.");
-            return false;
-        }
-
-        if (txtCantidad.getText().toString().trim().isEmpty() ||
-                Double.parseDouble(txtCantidad.getText().toString()) <= 0){
-            txtCantidad.setError("Cantidad invalido.");
-            return false;
-        }
-
-        return true;
-    }
-
-    private void cargarSucursales(){
-        DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
-
-        sucursalRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listaSucursales.clear();
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    Sucursal sucursal = dataSnapshot.getValue(Sucursal.class);
-                    sucursal.setIdSucursal(dataSnapshot.getKey());
-                    listaSucursales.add(sucursal);
-                }
-
-                adapterSucursal.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+        // Cargar el modelo LiteRT en segundo plano para no bloquear la UI
+        executor.execute(() -> {
+            try {
+                embeddingHelper = new EmbeddingHelper(this);
+            } catch (Throwable t) {
+                Log.e("EmbeddingHelper", "No se pudo cargar el modelo", t);
             }
         });
     }
 
-    private void abrirGaleria(){
+    private boolean validarCampos() {
+        if (txtNombre.getText().toString().trim().isEmpty()) {
+            txtNombre.setText("");
+            txtNombre.setError("Campo vacio.");
+            return false;
+        }
+        if (txtDescripcion.getText().toString().trim().isEmpty()) {
+            txtDescripcion.setText("");
+            txtDescripcion.setError("Campo vacio.");
+            return false;
+        }
+        if (txtPrecio.getText().toString().trim().isEmpty() ||
+                Double.parseDouble(txtPrecio.getText().toString().trim()) <= 0) {
+            txtPrecio.setError("Precio invalido.");
+            return false;
+        }
+        if (txtCantidad.getText().toString().trim().isEmpty() ||
+                Double.parseDouble(txtCantidad.getText().toString()) <= 0) {
+            txtCantidad.setError("Cantidad invalido.");
+            return false;
+        }
+        return true;
+    }
 
+    private void cargarSucursales() {
+        DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
+        sucursalRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaSucursales.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Sucursal sucursal = dataSnapshot.getValue(Sucursal.class);
+                    sucursal.setIdSucursal(dataSnapshot.getKey());
+                    listaSucursales.add(sucursal);
+                }
+                adapterSucursal.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void abrirGaleria() {
         selecionarImagen.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                 .build());
-
-
     }
-
-    private final ActivityResultLauncher<String> seleccionaImagenCamara2 =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(),resultado-> {
-                if (resultado) {
-                    abrirCamara();
-                } else {
-
-
-                    Toast.makeText(
-                            this,
-                            "Permiso de cámara denegado",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
-            });
 
     private void abrirCamara() {
         try {
             File archivoImagen = crearArchivoImagenCamara();
-
-
             rutaCamara = archivoImagen.getAbsolutePath();
-
-
-            uriImageCamara = FileProvider.getUriForFile(
-                    this,
-                    getPackageName() + ".provider",
-                    archivoImagen
-            );
-
-
+            uriImageCamara = FileProvider.getUriForFile(this, getPackageName() + ".provider", archivoImagen);
             seleccionaImagenCamara.launch(uriImageCamara);
-
-
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error al crear imagen", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-
     private File crearArchivoImagenCamara() throws IOException {
-
-
         String nombreArchivo = "CAM_" + System.currentTimeMillis() + ".jpg";
-
-
         File directorio = new File(getFilesDir(), "imagenes");
-
-
-        if (!directorio.exists()) {
-            directorio.mkdirs();
-        }
-
-
+        if (!directorio.exists()) directorio.mkdirs();
         return new File(directorio, nombreArchivo);
     }
 
     private void validarPermisoCamara() {
-
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED) {
-
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
             abrirCamara();
-
-
         } else {
-
-
-            seleccionaImagenCamara2.launch(
-                    Manifest.permission.CAMERA
-            );
+            seleccionaImagenCamara2.launch(Manifest.permission.CAMERA);
         }
     }
+
     private void mostrarModeloSeleccionado(Uri uri) {
-        // Obtiene el nombre real del archivo
-        String nombreArchivo = "modelo.glb"; // fallback
+        String nombreArchivo = "modelo.glb";
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
             int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
             if (index >= 0) nombreArchivo = cursor.getString(index);
             cursor.close();
         }
-
         txtNombreModelo.setText(nombreArchivo);
         layoutModeloSeleccionado.setVisibility(View.VISIBLE);
     }
-    private void guardarProducto(){
-        try {
-            //Validando los campos
-            if (validarCampos()){
-                //Capturando los datos de los campos
-                String nombre = txtNombre.getText().toString().trim().toUpperCase(),
-                        descripcion = txtDescripcion.getText().toString().trim().toUpperCase(),
-                        categoria = spCategoria.getSelectedItem().toString();
 
-                Sucursal sucursal = (Sucursal) spSucursales.getSelectedItem();
-                Log.i("Sucursal", sucursal.getIdSucursal());
+    private void guardarProducto() {
+        if (!validarCampos()) {
+            btnGuardarProducto.setEnabled(true);
+            return;
+        }
 
+        if (uriFotoSeleccionada == null) {
+            Toast.makeText(this, "No se ha seleccionado una imagen.", Toast.LENGTH_SHORT).show();
+            btnGuardarProducto.setEnabled(true);
+            return;
+        }
 
+        String nombre      = txtNombre.getText().toString().trim().toUpperCase();
+        String descripcion = txtDescripcion.getText().toString().trim().toUpperCase();
+        String categoria   = spCategoria.getSelectedItem().toString();
+        double precio      = Double.parseDouble(txtPrecio.getText().toString());
+        double cantidad    = Double.parseDouble(txtCantidad.getText().toString());
 
-                double precio = Double.parseDouble(txtPrecio.getText().toString()),
-                        cantidad = Double.parseDouble(txtCantidad.getText().toString());
+        // Extraer embedding en hilo de fondo, luego subir a Firebase
+        executor.execute(() -> {
+            VectoresIA vectoresIA = null;
+            if (embeddingHelper != null) {
+                try {
+                    Bitmap bmp = decodificarBitmap(uriFotoSeleccionada);
+                    float[] vector = embeddingHelper.extraer(bmp);
+                    ArrayList<Double> listaVector = new ArrayList<>();
+                    for (float f : vector) listaVector.add((double) f);
+                    vectoresIA = new VectoresIA(listaVector);
+                } catch (Exception e) {
+                    Log.e("Embedding", "Error al extraer vector", e);
+                }
+            }
+            VectoresIA vectoresFinal = vectoresIA;
+            runOnUiThread(() -> subirYGuardar(nombre, categoria, descripcion, precio, cantidad, vectoresFinal));
+        });
+    }
 
-                //Validando que se haya seleccionado una imagen de referencia
-                //del producto
-                if (uriFotoSeleccionada != null){
+    private void subirYGuardar(String nombre, String categoria, String descripcion,
+                                double precio, double cantidad, VectoresIA vectoresIA) {
+        repositorio.subirImagenStorage(uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
+            @Override
+            public void onExito(String urlDescarga) {
+                urlImagenProducto = urlDescarga;
 
-                    //Subiendo la imagen al storage
-                    repositorio.subirImagenStorage(uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
+                if (uriModeloSelccionado != null) {
+                    repositorio.subirModelo3DStorage(uriModeloSelccionado, new ProductoContrato.StorageCallBack() {
                         @Override
                         public void onExito(String urlDescarga) {
-                            //Obteniendo la URL de la imagen
-                            urlImagenProducto = urlDescarga;
+                            urlModelo3D = urlDescarga;
+                            Producto producto = new Producto(urlImagenProducto, urlModelo3D,
+                                    nombre, categoria, descripcion, precio, cantidad);
+                            producto.setVectoresIA(vectoresIA);
+                            repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {
+                                @Override
+                                public void onExito(String mensaje) {
+                                    Toast.makeText(AgregarProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                                    finish();
+                                }
 
-                            //Validando que se haya seleccionado el modelo 3D del producto
-                            if (uriModeloSelccionado != null){
-
-                                //Subiendo el modelo 3D al storage
-                                repositorio.subirModelo3DStorage(uriModeloSelccionado, new ProductoContrato.StorageCallBack() {
-                                    @Override
-                                    public void onExito(String urlDescarga) {
-                                        //Obtenemos la URL del modelo 3D
-                                        urlModelo3D = urlDescarga;
-
-                                        //Capturamos todos lo datos del producto en el objeto
-                                        Producto producto = new Producto(urlImagenProducto, urlModelo3D,
-                                                nombre, categoria, descripcion, precio, cantidad);
-
-                                        //Hacemos la inserción en el repositorio
-                                        repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {
-                                            @Override
-                                            public void onExito(String mensaje) {
-                                                Toast.makeText(AgregarProductoActivity.this, mensaje, Toast.LENGTH_SHORT).show();
-                                                finish();
-                                            }
-
-                                            @Override
-                                            public void onError(String error) {
-                                                Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
-                                                btnGuardarProducto.setEnabled(true);
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onError(String error) {
-                                        Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                            else {
-                                Toast.makeText(AgregarProductoActivity.this, "No se ha seleccionado un modelo 3D.", Toast.LENGTH_SHORT).show();
-                            }
-
+                                @Override
+                                public void onError(String error) {
+                                    Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                                    btnGuardarProducto.setEnabled(true);
+                                }
+                            });
                         }
 
                         @Override
                         public void onError(String error) {
                             Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                            btnGuardarProducto.setEnabled(true);
                         }
                     });
-                }else {
-                    Toast.makeText(this, "No se ha seleccionado una imagen.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AgregarProductoActivity.this, "No se ha seleccionado un modelo 3D.", Toast.LENGTH_SHORT).show();
+                    btnGuardarProducto.setEnabled(true);
                 }
             }
 
-        } catch (Exception e) {
+            @Override
+            public void onError(String error) {
+                Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+                btnGuardarProducto.setEnabled(true);
+            }
+        });
+    }
 
-            Log.i("ERROR DB", "No se pudo subir los datos");
-            throw new RuntimeException(e);
+    private Bitmap decodificarBitmap(Uri uri) throws IOException {
+        InputStream is = getContentResolver().openInputStream(uri);
+        Bitmap bmp = BitmapFactory.decodeStream(is);
+        if (is != null) is.close();
+
+        InputStream is2 = getContentResolver().openInputStream(uri);
+        ExifInterface exif = new ExifInterface(is2);
+        if (is2 != null) is2.close();
+
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL);
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:  matrix.postRotate(90);  break;
+            case ExifInterface.ORIENTATION_ROTATE_180: matrix.postRotate(180); break;
+            case ExifInterface.ORIENTATION_ROTATE_270: matrix.postRotate(270); break;
         }
+        return Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (embeddingHelper != null) embeddingHelper.close();
+        executor.shutdownNow();
     }
 }
