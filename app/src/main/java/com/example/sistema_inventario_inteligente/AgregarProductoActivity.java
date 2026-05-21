@@ -26,7 +26,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -39,17 +38,15 @@ import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
 import com.example.sistema_inventario_inteligente.models.Sucursal;
+import com.example.sistema_inventario_inteligente.models.SucursalContrato;
+import com.example.sistema_inventario_inteligente.models.SucursalRepository;
 import com.example.sistema_inventario_inteligente.models.VectoresIA;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,10 +65,10 @@ public class AgregarProductoActivity extends AppCompatActivity {
     private Uri uriFotoSeleccionada = null;
     private String urlImagenProducto = "";
     private String urlModelo3D = "";
-    public ArrayList<Sucursal> listaSucursales;
-    public ArrayAdapter<Sucursal> adapterSucursal;
-    public Spinner spSucursales, spCategoria;
+    public Spinner spCategoria, spSucursalAdd;
     private ProductoContrato repositorio = new ProductoRepository();
+    private final SucursalContrato repositorioSucursal = new SucursalRepository();
+    private final List<Sucursal> listaSucursales = new ArrayList<>();
     public LinearLayout layoutModeloSeleccionado;
     public TextView txtNombreModelo;
 
@@ -136,23 +133,19 @@ public class AgregarProductoActivity extends AppCompatActivity {
         txtPrecio              = findViewById(R.id.txtPrecioAdd);
         txtCantidad            = findViewById(R.id.txtCantidadAdd);
         spCategoria            = findViewById(R.id.spCategoriaAdd);
-        spSucursales           = findViewById(R.id.spSucursalAdd);
         btnAtras               = findViewById(R.id.btnAddBack);
         btnGuardarCamara       = findViewById(R.id.btnCamaraAddProducto);
         btnSeleccionarModelo   = findViewById(R.id.btnSeleccionarModelo);
         btnQuitarModelo        = findViewById(R.id.btnQuitarModelo);
         btnGuardarGaleria      = findViewById(R.id.btnGaleriaAddProducto);
         btnGuardarProducto     = findViewById(R.id.btnGuardarProducto);
-
-        listaSucursales = new ArrayList<>();
-        adapterSucursal = new ArrayAdapter<>(this, R.layout.spinner_item, listaSucursales);
-        adapterSucursal.setDropDownViewResource(R.layout.spinner_dropdown);
-        spSucursales.setAdapter(adapterSucursal);
-        cargarSucursales();
+        spSucursalAdd          = findViewById(R.id.spSucursalAdd);
 
         ArrayAdapter<String> adapterCategoria = new ArrayAdapter<>(this, R.layout.spinner_item, CATEGORIAS);
         adapterCategoria.setDropDownViewResource(R.layout.spinner_dropdown);
         spCategoria.setAdapter(adapterCategoria);
+
+        cargarSucursales();
 
         btnAtras.setOnClickListener(v -> finish());
         btnSeleccionarModelo.setOnClickListener(v -> selectorModelo.launch(new String[]{"*/*"}));
@@ -173,6 +166,25 @@ public class AgregarProductoActivity extends AppCompatActivity {
                 embeddingHelper = new EmbeddingHelper(this);
             } catch (Throwable t) {
                 Log.e("EmbeddingHelper", "No se pudo cargar el modelo", t);
+            }
+        });
+    }
+
+    private void cargarSucursales() {
+        repositorioSucursal.obtenerTodas(new SucursalContrato.LeerCallback() {
+            @Override
+            public void onSucursalesCargadas(List<Sucursal> sucursales) {
+                listaSucursales.clear();
+                listaSucursales.addAll(sucursales);
+                ArrayAdapter<Sucursal> adapter = new ArrayAdapter<>(
+                        AgregarProductoActivity.this, R.layout.spinner_item, listaSucursales);
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown);
+                spSucursalAdd.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(AgregarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -199,25 +211,6 @@ public class AgregarProductoActivity extends AppCompatActivity {
             return false;
         }
         return true;
-    }
-
-    private void cargarSucursales() {
-        DatabaseReference sucursalRef = FirebaseDatabase.getInstance().getReference("sucursales");
-        sucursalRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listaSucursales.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Sucursal sucursal = dataSnapshot.getValue(Sucursal.class);
-                    sucursal.setIdSucursal(dataSnapshot.getKey());
-                    listaSucursales.add(sucursal);
-                }
-                adapterSucursal.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
     }
 
     private void abrirGaleria() {
@@ -278,9 +271,16 @@ public class AgregarProductoActivity extends AppCompatActivity {
             return;
         }
 
+        if (listaSucursales.isEmpty()) {
+            Toast.makeText(this, "No hay sucursales disponibles.", Toast.LENGTH_SHORT).show();
+            btnGuardarProducto.setEnabled(true);
+            return;
+        }
+
         String nombre      = txtNombre.getText().toString().trim().toUpperCase();
         String descripcion = txtDescripcion.getText().toString().trim().toUpperCase();
         String categoria   = spCategoria.getSelectedItem().toString();
+        String idSucursal  = listaSucursales.get(spSucursalAdd.getSelectedItemPosition()).getIdSucursal();
         double precio      = Double.parseDouble(txtPrecio.getText().toString());
         double cantidad    = Double.parseDouble(txtCantidad.getText().toString());
 
@@ -299,12 +299,12 @@ public class AgregarProductoActivity extends AppCompatActivity {
                 }
             }
             VectoresIA vectoresFinal = vectoresIA;
-            runOnUiThread(() -> subirYGuardar(nombre, categoria, descripcion, precio, cantidad, vectoresFinal));
+            runOnUiThread(() -> subirYGuardar(nombre, categoria, descripcion, precio, cantidad, idSucursal, vectoresFinal));
         });
     }
 
     private void subirYGuardar(String nombre, String categoria, String descripcion,
-                                double precio, double cantidad, VectoresIA vectoresIA) {
+                                double precio, double cantidad, String idSucursal, VectoresIA vectoresIA) {
         repositorio.subirImagenStorage(uriFotoSeleccionada, new ProductoContrato.StorageCallBack() {
             @Override
             public void onExito(String urlDescarga) {
@@ -317,6 +317,7 @@ public class AgregarProductoActivity extends AppCompatActivity {
                             urlModelo3D = urlDescarga;
                             Producto producto = new Producto(urlImagenProducto, urlModelo3D,
                                     nombre, categoria, descripcion, precio, cantidad);
+                            producto.setIdSucursal(idSucursal);
                             producto.setVectoresIA(vectoresIA);
                             repositorio.insertarProducto(producto, new ProductoContrato.OperacionCallback() {
                                 @Override

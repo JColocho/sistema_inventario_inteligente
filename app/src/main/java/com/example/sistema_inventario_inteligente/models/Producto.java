@@ -9,6 +9,7 @@ public class Producto {
     private Double cantidad;
     private String urlImagenProducto;
     private String urlModelo3D;
+    private String idSucursal;
     private VectoresIA vectoresIA;
 
     public Producto() {}
@@ -47,6 +48,9 @@ public class Producto {
 
     public String getUrlModelo3D() { return urlModelo3D; }
     public void setUrlModelo3D(String urlModelo3D) { this.urlModelo3D = urlModelo3D; }
+
+    public String getIdSucursal() { return idSucursal; }
+    public void setIdSucursal(String idSucursal) { this.idSucursal = idSucursal; }
 
     public VectoresIA getVectoresIA() { return vectoresIA; }
     public void setVectoresIA(VectoresIA vectoresIA) { this.vectoresIA = vectoresIA; }

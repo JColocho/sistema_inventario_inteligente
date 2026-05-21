@@ -38,17 +38,6 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:name=".location.MapsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_maps" >
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
-
-        <activity
             android:name=".AgregarProductoActivity"
             android:windowSoftInputMode="adjustResize" />
 

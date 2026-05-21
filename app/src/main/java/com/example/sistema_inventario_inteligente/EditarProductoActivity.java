@@ -39,6 +39,9 @@ import com.example.sistema_inventario_inteligente.glide.GlideApp;
 import com.example.sistema_inventario_inteligente.models.Producto;
 import com.example.sistema_inventario_inteligente.models.ProductoContrato;
 import com.example.sistema_inventario_inteligente.models.ProductoRepository;
+import com.example.sistema_inventario_inteligente.models.Sucursal;
+import com.example.sistema_inventario_inteligente.models.SucursalContrato;
+import com.example.sistema_inventario_inteligente.models.SucursalRepository;
 import com.example.sistema_inventario_inteligente.models.VectoresIA;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -47,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,7 +66,7 @@ public class EditarProductoActivity extends AppCompatActivity {
     public ImageView btnAtras, imgProducto, btnQuitarModelo;
     public Button btnGuardarGaleria, btnGuardarCamara, btnSeleccionarModelo, btnActualizarProducto;
     public EditText txtNombre, txtDescripcion, txtPrecio, txtCantidad;
-    public Spinner spCategoria;
+    public Spinner spCategoria, spSucursalEdit;
     public LinearLayout layoutModeloSeleccionado;
     public TextView txtNombreModelo;
 
@@ -74,9 +78,11 @@ public class EditarProductoActivity extends AppCompatActivity {
     private Uri uriModeloSeleccionado = null;
     private Uri uriFotoSeleccionada = null;
     private String rutaCamara;
+    private final List<Sucursal> listaSucursales = new ArrayList<>();
 
-    // Repositorio + IA
+    // Repositorios + IA
     private final ProductoContrato repositorio = new ProductoRepository();
+    private final SucursalContrato repositorioSucursal = new SucursalRepository();
     private EmbeddingHelper embeddingHelper;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -142,6 +148,7 @@ public class EditarProductoActivity extends AppCompatActivity {
         txtPrecio                = findViewById(R.id.txtPrecioEdit);
         txtCantidad              = findViewById(R.id.txtCantidadEdit);
         spCategoria              = findViewById(R.id.spCategoriaEdit);
+        spSucursalEdit           = findViewById(R.id.spSucursalEdit);
         btnAtras                 = findViewById(R.id.btnEditarBack);
         btnGuardarCamara         = findViewById(R.id.btnCamaraEditarProducto);
         btnGuardarGaleria        = findViewById(R.id.btnGaleriaEditarProducto);
@@ -150,6 +157,7 @@ public class EditarProductoActivity extends AppCompatActivity {
         btnActualizarProducto    = findViewById(R.id.btnEditarProducto);
 
         configurarSpinnerCategorias();
+        cargarSucursales();
         configurarListeners();
         cargarDatosProducto();
 
@@ -212,6 +220,7 @@ public class EditarProductoActivity extends AppCompatActivity {
                     layoutModeloSeleccionado.setVisibility(View.VISIBLE);
                 }
                 seleccionarCategoriaEnSpinner(producto.getCategoria());
+                seleccionarSucursalEnSpinner(producto.getIdSucursal());
             }
 
             @Override
@@ -227,6 +236,37 @@ public class EditarProductoActivity extends AppCompatActivity {
         for (int i = 0; i < CATEGORIAS.length; i++) {
             if (CATEGORIAS[i].equalsIgnoreCase(nombreCategoria)) {
                 spCategoria.setSelection(i);
+                return;
+            }
+        }
+    }
+
+    private void cargarSucursales() {
+        repositorioSucursal.obtenerTodas(new SucursalContrato.LeerCallback() {
+            @Override
+            public void onSucursalesCargadas(List<Sucursal> sucursales) {
+                listaSucursales.clear();
+                listaSucursales.addAll(sucursales);
+                ArrayAdapter<Sucursal> adapter = new ArrayAdapter<>(
+                        EditarProductoActivity.this, R.layout.spinner_item, listaSucursales);
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown);
+                spSucursalEdit.setAdapter(adapter);
+                if (productoActual != null)
+                    seleccionarSucursalEnSpinner(productoActual.getIdSucursal());
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(EditarProductoActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void seleccionarSucursalEnSpinner(String idSucursal) {
+        if (idSucursal == null) return;
+        for (int i = 0; i < listaSucursales.size(); i++) {
+            if (idSucursal.equals(listaSucursales.get(i).getIdSucursal())) {
+                spSucursalEdit.setSelection(i);
                 return;
             }
         }
@@ -261,7 +301,14 @@ public class EditarProductoActivity extends AppCompatActivity {
         }
         if (!validarCampos()) return;
 
+        if (listaSucursales.isEmpty()) {
+            Toast.makeText(this, "No hay sucursales disponibles.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         btnActualizarProducto.setEnabled(false);
+
+        String idSucursal = listaSucursales.get(spSucursalEdit.getSelectedItemPosition()).getIdSucursal();
 
         productoNuevo = new Producto(
                 productoActual.getUrlImagenProducto(),
@@ -272,6 +319,7 @@ public class EditarProductoActivity extends AppCompatActivity {
                 Double.parseDouble(txtPrecio.getText().toString().trim()),
                 Double.parseDouble(txtCantidad.getText().toString().trim()));
         productoNuevo.setIdProducto(productoActual.getIdProducto());
+        productoNuevo.setIdSucursal(idSucursal);
         productoNuevo.setVectoresIA(productoActual.getVectoresIA());
 
         if (uriFotoSeleccionada != null) {
