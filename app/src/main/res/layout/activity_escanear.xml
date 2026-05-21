@@ -454,7 +454,8 @@
                     android:paddingTop="12dp"
                     android:paddingBottom="12dp"
                     app:strokeColor="@color/ar_divider"
-                    app:cornerRadius="999dp" />
+                    app:cornerRadius="999dp"
+                    android:textSize="16dp"/>
 
             </LinearLayout>
         </LinearLayout>

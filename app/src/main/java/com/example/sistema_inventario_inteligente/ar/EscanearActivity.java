@@ -54,7 +54,7 @@ public class EscanearActivity extends AppCompatActivity {
 
     private static final String TAG = "EscanearActivity";
     private static final float MODELO_ESCALA_METROS = 0.3f;
-    private static final double UMBRAL_SIMILITUD = 0.62;
+    private static final double UMBRAL_SIMILITUD = 0.50f;
     private static final int FRAMES_CONFIRMACION = 3;
     private static final long INTERVALO_ANALISIS_MS = 600;
     private static final long TIMEOUT_AYUDA_MS = 15_000;
