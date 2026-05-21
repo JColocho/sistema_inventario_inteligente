@@ -1,6 +1,7 @@
 package com.example.sistema_inventario_inteligente;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -20,8 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sistema_inventario_inteligente.adapters.SucursalAdapter;
 import com.example.sistema_inventario_inteligente.models.Sucursal;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -52,13 +58,23 @@ public class SucursalFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedClient;
     private double latUser = 0, lngUser = 0;
     private String idSucursalCercana = null;
+    // Evita pedir permiso/GPS de nuevo al volver de los propios diálogos de permiso/GPS
+    private boolean permisoGestionado = false;
 
     private DatabaseReference sucursalesRef;
     private ValueEventListener sucursalesListener;
 
+    private final ActivityResultLauncher<IntentSenderRequest> gpsSettingsLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    obtenerUbicacion();
+                }
+            });
+
     private final ActivityResultLauncher<String> permisoUbicacion =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
-                if (granted) obtenerUbicacion();
+                if (granted) verificarGpsActivo();
+                else if (tvSucursalCercana != null) tvSucursalCercana.setText("Sin permiso GPS");
             });
 
     public SucursalFragment() {}
@@ -92,29 +108,65 @@ public class SucursalFragment extends Fragment implements OnMapReadyCallback {
         rvSucursales.setAdapter(adapter);
         rvSucursales.setNestedScrollingEnabled(false);
 
-        pedirPermiso();
         cargarSucursales();
-
         return view;
+    }
+
+    // Se llama cada vez que el fragment vuelve a ser visible
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mapView != null) mapView.onResume();
+        if (!permisoGestionado) {
+            permisoGestionado = true;
+            pedirPermiso();
+        }
+    }
+
+    // Al salir del fragment (navegar a otra tab) se resetea para pedirlo de nuevo al volver
+    @Override
+    public void onStop() {
+        super.onStop();
+        permisoGestionado = false;
     }
 
     private void pedirPermiso() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            obtenerUbicacion();
+            verificarGpsActivo();
         } else {
             permisoUbicacion.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
+    private void verificarGpsActivo() {
+        LocationRequest req = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0)
+                .setMaxUpdates(1).build();
+        LocationSettingsRequest settingsReq = new LocationSettingsRequest.Builder()
+                .addLocationRequest(req).build();
+        LocationServices.getSettingsClient(requireContext())
+                .checkLocationSettings(settingsReq)
+                .addOnSuccessListener(r -> obtenerUbicacion())
+                .addOnFailureListener(e -> {
+                    if (e instanceof ResolvableApiException) {
+                        try {
+                            IntentSenderRequest ir = new IntentSenderRequest.Builder(
+                                    ((ResolvableApiException) e).getResolution()).build();
+                            gpsSettingsLauncher.launch(ir);
+                        } catch (Exception ignored) {}
+                    }
+                });
+    }
+
     @SuppressWarnings("MissingPermission")
     private void obtenerUbicacion() {
-        fusedClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location == null || getContext() == null) return;
-            latUser = location.getLatitude();
-            lngUser = location.getLongitude();
-            actualizarConUbicacion();
-        });
+        fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    if (location == null || getContext() == null) return;
+                    latUser = location.getLatitude();
+                    lngUser = location.getLongitude();
+                    actualizarConUbicacion();
+                });
     }
 
     private void cargarSucursales() {
@@ -202,12 +254,6 @@ public class SucursalFragment extends Fragment implements OnMapReadyCallback {
         googleMap = map;
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         dibujarMarcadores();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mapView != null) mapView.onResume();
     }
 
     @Override
