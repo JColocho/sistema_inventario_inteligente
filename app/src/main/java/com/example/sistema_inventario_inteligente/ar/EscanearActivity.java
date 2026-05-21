@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.sistema_inventario_inteligente.DetalleProductoActivity;
 import com.example.sistema_inventario_inteligente.R;
 import com.example.sistema_inventario_inteligente.databinding.ActivityEscanearBinding;
@@ -507,6 +508,8 @@ public class EscanearActivity extends AppCompatActivity {
             GlideApp.with(this)
                     .load(FirebaseStorage.getInstance().getReferenceFromUrl(p.getUrlImagenProducto()))
                     .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(binding.ivProductoThumbAR);
             binding.ivProductoThumbAR.setVisibility(View.VISIBLE);
         } else {
