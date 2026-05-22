@@ -62,20 +62,75 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="8dp"
             app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
             app:strokeColor="@color/border_default"
             app:strokeWidth="1dp">
 
+            <!-- Imagen del producto -->
             <ImageView
                 android:id="@+id/imgProductoDetalle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
+                android:visibility="visible"
                 app:srcCompat="@drawable/camara" />
+
+            <!-- Visor 3D — ocupa el mismo espacio, oculto por defecto -->
+            <io.github.sceneview.SceneView
+                android:id="@+id/sceneViewDetalle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <!-- Indicador de carga del modelo -->
+            <TextView
+                android:id="@+id/tvCargandoModelo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Cargando modelo..."
+                android:textColor="@color/accent_teal"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
         </com.google.android.material.card.MaterialCardView>
+        <LinearLayout
+            android:id="@+id/layoutTabsVisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tabImagen"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button"
+                android:gravity="center"
+                android:text="Imagen"
+                android:textColor="@color/bg_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tabModelo3D"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_field"
+                android:gravity="center"
+                android:text="Modelo 3D"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
